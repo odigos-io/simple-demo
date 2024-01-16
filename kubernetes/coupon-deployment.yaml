@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coupon
+  labels:
+    app: coupon
+    odigos-instrumentation: disabled
+spec:
+  selector:
+    matchLabels:
+      app: coupon
+  template:
+    metadata:
+      labels:
+        app: coupon
+    spec:
+      containers:
+      - name: coupon
+        image: edenfed/kv-shop-coupon:v0.1
+        imagePullPolicy: Always
+        env:
+          - name: NODE_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: OTEL_TRACES_EXPORTER
+            value: otlp
+          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            value: "http://$(NODE_IP):4318"
+          - name: OTEL_SERVICE_NAME
+            value: coupon
+          - name: MEMBERSHIP_SERVICE_URL
+            value: "membership:8080"
+        ports:
+        - containerPort: 8080
+
+  

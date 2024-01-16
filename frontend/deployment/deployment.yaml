@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: dev/kv-shop-frontend:dev
+        env:
+        - name: INVENTORY_SERVICE_HOST
+          value: inventory:8080
+        - name: PRICING_SERVICE_HOST
+          value: pricing:8080
+        - name: COUPON_SERVICE_HOST
+          value: coupon:8080
+        ports:
+        - containerPort: 8080
+  

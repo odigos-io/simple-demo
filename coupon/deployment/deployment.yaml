@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coupon
+  labels:
+    app: coupon
+spec:
+  selector:
+    matchLabels:
+      app: coupon
+  template:
+    metadata:
+      labels:
+        app: coupon
+    spec:
+      containers:
+      - name: coupon
+        image: dev/coupon:dev
+        env:
+          - name: MEMBERSHIP_SERVICE_URL
+            value: "membership:8080"
+        ports:
+        - containerPort: 8080
+
+  
