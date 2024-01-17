@@ -10,7 +10,7 @@ Simple Demo contains the following services:
 | Service | Language | Version |
 | --- | --- | --- |
 | Frontend | Java | 17 (Eclipse Temurin) |
-| Inventory | Java | 11 (Eclipse Temurin) |
+| Inventory | Python | 3.11 |
 | Pricing | Java | 8 (Eclipse Temurin) |
 | Membership | Go | 1.21 |
 | Coupon | JavaScript | NodeJS 18.3.0 |

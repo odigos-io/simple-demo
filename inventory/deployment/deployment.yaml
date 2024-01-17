@@ -18,4 +18,6 @@ spec:
         image: dev/inventory:dev
         ports:
         - containerPort: 8080
+        securityContext:
+          runAsUser: 1000
   
