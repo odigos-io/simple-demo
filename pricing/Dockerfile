@@ -1,9 +1,15 @@
-FROM maven:3.8.5-openjdk-11 AS build
-COPY src /home/app/src
-COPY pom.xml /home/app
-RUN mvn -f /home/app/pom.xml clean package
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+WORKDIR /App
 
-FROM eclipse-temurin:8-jre-jammy
-COPY --from=build /home/app/target/*.jar /app/pricing.jar
-USER 15000
-CMD ["java","-jar", "/app/pricing.jar"]
+# Copy everything
+COPY . ./
+# Restore as distinct layers
+RUN dotnet restore
+# Build and publish a release
+RUN dotnet publish -c Release -o out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /App
+COPY --from=build-env /App/out .
+ENTRYPOINT ["dotnet", "pricing.dll"]
