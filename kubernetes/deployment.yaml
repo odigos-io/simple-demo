@@ -1,0 +1,181 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coupon
+  labels:
+    app: coupon
+spec:
+  selector:
+    matchLabels:
+      app: coupon
+  template:
+    metadata:
+      labels:
+        app: coupon
+    spec:
+      containers:
+      - name: coupon
+        image: keyval/odigos-demo-coupon:v0.1
+        imagePullPolicy: Always
+        env:
+          - name: MEMBERSHIP_SERVICE_URL
+            value: "membership:8080"
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: coupon
+spec:
+  selector:
+    app: coupon
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: keyval/odigos-demo-frontend:v0.1
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 1000
+        env:
+        - name: INVENTORY_SERVICE_HOST
+          value: inventory:8080
+        - name: PRICING_SERVICE_HOST
+          value: pricing:8080
+        - name: COUPON_SERVICE_HOST
+          value: coupon:8080
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory
+  labels:
+    app: inventory
+spec:
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+      - name: inventory
+        image: keyval/odigos-demo-inventory:v0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: inventory
+spec:
+  selector:
+    app: inventory
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: membership
+  labels:
+    app: membership
+spec:
+  selector:
+    matchLabels:
+      app: membership
+  template:
+    metadata:
+      labels:
+        app: membership
+    spec:
+      containers:
+      - name: membership
+        image: keyval/odigos-demo-membership:v0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: membership
+spec:
+  selector:
+    app: membership
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricing
+  labels:
+    app: pricing
+spec:
+  selector:
+    matchLabels:
+      app: pricing
+  template:
+    metadata:
+      labels:
+        app: pricing
+    spec:
+      containers:
+      - name: pricing
+        image: keyval/odigos-demo-pricing:v0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: pricing
+spec:
+  selector:
+    app: pricing
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
