@@ -5,13 +5,15 @@ This application is used to demonstrate the capabilities of Odigos.
 
 ## Architecture
 
+![Architecture](assets/architecture.png)
+
 Simple Demo contains the following services:
 
 | Service | Language | Version |
 | --- | --- | --- |
 | Frontend | Java | 17 (Eclipse Temurin) |
 | Inventory | Python | 3.11 |
-| Pricing | Java | 8 (Eclipse Temurin) |
+| Pricing | .NET | 8.0 |
 | Membership | Go | 1.21 |
 | Coupon | JavaScript | NodeJS 18.3.0 |
 
