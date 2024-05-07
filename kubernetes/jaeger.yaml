@@ -21,7 +21,7 @@ spec:
         app: jaeger
     spec:
       containers:
-      - image: jaegertracing/all-in-one:latest
+      - image: jaegertracing/all-in-one:1.57
         name: all-in-one
 ---
 apiVersion: v1
