@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -15,8 +16,22 @@ type IsMemberResponse struct {
 	IsMember bool `json:"isMember"`
 }
 
+func getPortFromEnvOrDefault() int {
+	port := httpPort
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		p, err := strconv.Atoi(envPort)
+		if err != nil {
+			slog.Error("failed to parse PORT env variable", "error", err)
+			return port
+		}
+		port = p
+	}
+	return port
+}
+
 func main() {
-	slog.Info("Starting Membership service", "port", httpPort)
+	port := getPortFromEnvOrDefault()
+	slog.Info("Starting Membership service", "port", port)
 	http.HandleFunc("/isMember", func(writer http.ResponseWriter, request *http.Request) {
 		slog.Info("isMember called")
 		res := IsMemberResponse{
