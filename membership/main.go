@@ -54,7 +54,7 @@ func main() {
 
 	})
 
-	err := http.ListenAndServe(":"+strconv.Itoa(httpPort), nil)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
 	if err != nil {
 		slog.Error("failed to start Membership service", "error", err)
 	}
