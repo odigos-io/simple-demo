@@ -1,0 +1,50 @@
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    binary: odigos-membership
+nfpms:
+  - id: packages # this id is used in the publisher section to specify which artifacts to publish
+    package_name: membership
+    contents:
+      - src: distribution/membership/membership.service
+        dst: /lib/systemd/system/membership.service
+    scripts:
+      preinstall: distribution/membership/preinstall.sh
+      postinstall: distribution/membership/postinstall.sh
+      preremove: distribution/membership/preremove.sh
+    vendor: Odigos
+    homepage: https://odigos.io
+    formats:
+      - deb
+      - rpm
+    description: Odigos demo membership service
+    file_name_template: "{{ .ConventionalFileName }}"
+    maintainer: Odigos
+publishers:
+  - name: fury deb publisher
+    ids: # publish only the artifacts created in the nfpms section. e.g. ignore the tar.gz archive
+      - packages
+    cmd: fury push {{ .ArtifactName }} --account {{ .Env.FURY_ACCOUNT }} --api-token {{ .Env.FURY_API_TOKEN }} --public --quiet
+    dir: dist
+archives:
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of uname.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"

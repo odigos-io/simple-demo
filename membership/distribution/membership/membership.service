@@ -1,0 +1,14 @@
+[Unit]
+Description=Odigos Demo Membership Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/odigos-membership-service
+KillMode=mixed
+Restart=on-failure
+Type=simple
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
