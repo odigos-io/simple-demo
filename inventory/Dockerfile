@@ -42,5 +42,7 @@ COPY --from=builder /app /app
 # Expose the port that the application will run on
 EXPOSE 8080
 
+ENV PYTHONPATH=/bar
+
 # Command to run the application
 CMD ["python", "main.py"]
