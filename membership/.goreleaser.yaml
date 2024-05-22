@@ -50,4 +50,4 @@ snapshot:
   name_template: "{{ incpatch .Version }}-next"
 
 release:
-  enabled: false
+  disabled: true
