@@ -9,7 +9,10 @@ permissions:
   contents: read
 
 jobs:
-  release:
+  ######################
+  ####  MEMBERSHIP  ####
+  ######################
+  release-membership:
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -35,11 +38,11 @@ jobs:
           sudo bash -c "echo 'deb [trusted=yes] https://apt.fury.io/cli/ * *' > /etc/apt/sources.list.d/fury-cli.list"
           sudo apt-get update
           sudo apt-get install -y fury-cli
-  
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"  
+          go-version: "1.22"
 
       - name: Release Membership Linux Package
         uses: goreleaser/goreleaser-action@v5
@@ -52,4 +55,50 @@ jobs:
             FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
             FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
+  ######################
+  ####   FRONTEND   ####
+  ######################
+  release-frontend:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+
+      - name: set new version as env
+        run: |
+          echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TAG }}
+
+      - name: Set env
+        id: vars
+        run: |
+          SHORT_COMMIT=$(git rev-parse --short HEAD)
+          echo "short_commit=${SHORT_COMMIT}" >> $GITHUB_ENV
+          echo "date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
+
+      - name: Install GemFury CLI
+        run: |
+          sudo bash -c "echo 'deb [trusted=yes] https://apt.fury.io/cli/ * *' > /etc/apt/sources.list.d/fury-cli.list"
+          sudo apt-get update
+          sudo apt-get install -y fury-cli
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+
+      - name: Release
+        env:
+          FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
+          FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          make generate-webapp
+          nfpm --help || true
+          cd frontend
+          docker build -t frontend .
+          docker cp $(docker create --name tc frontend):/app ./dist && docker rm tc

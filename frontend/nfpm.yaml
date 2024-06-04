@@ -1,0 +1,27 @@
+name: odigos-demo-frontend
+arch: all
+platform: linux
+version: 1.0.0
+section: default
+priority: extra
+maintainer: Odigos
+description: |
+  Demo Java application for testing Odigos
+vendor: Odigos
+homepage: https://odigos.io
+contents:
+- src: distribution/systemd.service
+  dst: /lib/systemd/system/odigos-demo-frontend.service
+- src: ./dist/frontend.jar
+  dst: /usr/share/java/odigos-demo-frontend.jar
+scripts:
+  preinstall: ./distribution/preinstall.sh
+  postinstall: ./distribution/postinstall.sh
+  preremove: ./distribution/preremove.sh
+overrides:
+  rpm:
+    depends:
+    - java-17-openjdk-headless
+  deb:
+    depends:
+    - openjdk-17-jre-headless
