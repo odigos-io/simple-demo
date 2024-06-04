@@ -1,11 +1,11 @@
 FROM node:20-alpine as fe-build
 USER node
 WORKDIR /home/node
-COPY webapp/package* /home/node/
-RUN yarn
+COPY webapp/package* webapp/yarn.lock /home/node/
+RUN ls -lah . && yarn
 
-COPY webapp/* /home/node/
-RUN yarn build
+COPY webapp /home/node/
+RUN ls -lah . && yarn build
 
 FROM maven:3.8.5-openjdk-17 AS build
 COPY src /home/app/src
