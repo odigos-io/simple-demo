@@ -3,9 +3,9 @@ PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 .PHONY: generate-webapp
 generate-webapp:
 	@echo "Generating webapp..."
-	@cd $(PROJECT_DIR)webapp && yarn build
+	@cd $(PROJECT_DIR)frontend/webapp && yarn build
 	rm -rf $(PROJECT_DIR)/frontend/src/main/resources/static/*
-	cp -r $(PROJECT_DIR)webapp/out/* $(PROJECT_DIR)/frontend/src/main/resources/static/
+	cp -r $(PROJECT_DIR)frontend/webapp/out/* $(PROJECT_DIR)/frontend/src/main/resources/static/
 
 .PHONY: build-images
 build-images: generate-webapp
