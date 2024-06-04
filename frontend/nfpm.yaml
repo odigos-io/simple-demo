@@ -1,7 +1,7 @@
 name: odigos-demo-frontend
 arch: all
 platform: linux
-version: 1.0.1
+version: 1.0.0
 section: default
 priority: extra
 maintainer: Odigos

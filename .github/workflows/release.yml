@@ -113,5 +113,7 @@ jobs:
           cat nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
+          fury yank --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN odigos-demo-frontend -v 1.0.0-1  || true
+          fury yank --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN odigos-demo-frontend -v 1.0.0  || true
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.deb
