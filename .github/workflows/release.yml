@@ -108,6 +108,9 @@ jobs:
           nfpm --help || true
           docker build -t frontend .
           docker cp $(docker create --name tc frontend):/app ./dist && docker rm tc
+          ls -lah dist
+          ls -lah .
+          cat nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push dist/*.rpm
