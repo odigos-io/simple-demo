@@ -1,0 +1,16 @@
+[Unit]
+Description=Odigos Demo Coupon Service
+After=network.target
+
+[Service]
+ExecStart=node /opt/odigos-demo-coupon/app.js
+KillMode=mixed
+Restart=on-failure
+Type=simple
+User=odigos
+Group=odigos
+Environment="PORT=8084"
+Environment="MEMBERSHIP_SERVICE_HOST=localhost:8081"
+
+[Install]
+WantedBy=multi-user.target

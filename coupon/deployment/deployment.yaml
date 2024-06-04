@@ -21,5 +21,3 @@ spec:
             value: "membership:8080"
         ports:
         - containerPort: 8080
-
-  

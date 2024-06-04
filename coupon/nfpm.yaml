@@ -1,0 +1,22 @@
+name: odigos-demo-coupon
+arch: all
+platform: linux
+version: 1.0.0
+section: default
+priority: extra
+maintainer: Odigos
+description: |
+  Demo Node.js application for testing Odigos
+vendor: Odigos
+homepage: https://odigos.io
+depends:
+- nodejs
+contents:
+- src: distribution/systemd.service
+  dst: /lib/systemd/system/odigos-demo-coupon.service
+- src: ./dist/app
+  dst: /opt/odigos-demo-coupon
+scripts:
+  preinstall: ./distribution/preinstall.sh
+  postinstall: ./distribution/postinstall.sh
+  preremove: ./distribution/preremove.sh

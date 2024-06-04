@@ -10,7 +10,6 @@ Type=simple
 User=odigos
 Group=odigos
 Environment="PORT=8080"
-#Environment="MEMBERSHIP_SERVICE_HOST=localhost:8081" # Not used
 Environment="INVENTORY_SERVICE_HOST=localhost:8082"
 Environment="PRICING_SERVICE_HOST=localhost:8083"
 Environment="COUPON_SERVICE_HOST=localhost:8084"

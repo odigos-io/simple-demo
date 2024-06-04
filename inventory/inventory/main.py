@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 import time
 import signal
 import sys
+import os
+
+PORT = os.environ["PORT"] if "PORT" in os.environ else 8080
 
 app = Flask(__name__)
 
@@ -52,4 +55,4 @@ def signal_handler(sig, frame):
 
 if __name__ == '__main__':
     signal.signal(signal.SIGTERM, signal_handler)
-    app.run(debug=False, port=8080, host='0.0.0.0')
+    app.run(debug=False, port=PORT, host='0.0.0.0')
