@@ -73,9 +73,9 @@ jobs:
           echo "TAG=main" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ env.TAG }}
+        # with:
+          # fetch-depth: 0
+          # ref: ${{ env.TAG }}
 
       - name: Set env
         id: vars
