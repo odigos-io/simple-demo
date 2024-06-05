@@ -3,8 +3,8 @@ Description=Odigos Demo Pricing Service
 After=network.target
 
 [Service]
-#ExecStart=dotnet /opt/odigos-demo-pricing/pricing.dll
-ExecStart=/opt/odigos-demo-pricing/pricing
+#ExecStart=/opt/odigos-demo-pricing/pricing
+ExecStart=dotnet /opt/odigos-demo-pricing/pricing.dll
 KillMode=mixed
 Restart=on-failure
 Type=simple
