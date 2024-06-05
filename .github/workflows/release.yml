@@ -1,4 +1,4 @@
-name: Release Odigos Simple Demo Services
+name: Release Demo Services
 
 on:
   push:
@@ -280,4 +280,3 @@ jobs:
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.deb
-

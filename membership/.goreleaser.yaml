@@ -15,12 +15,12 @@ nfpms:
   - id: packages # this id is used in the publisher section to specify which artifacts to publish
     package_name: odigos-demo-membership
     contents:
-      - src: distribution/membership/membership.service
-        dst: /lib/systemd/system/membership.service
+      - src: distribution/systemd.service
+        dst: /lib/systemd/system/odigos-demo-membership.service
     scripts:
-      preinstall: distribution/membership/preinstall.sh
-      postinstall: distribution/membership/postinstall.sh
-      preremove: distribution/membership/preremove.sh
+      preinstall: distribution/preinstall.sh
+      postinstall: distribution/postinstall.sh
+      preremove: distribution/preremove.sh
     vendor: Odigos
     homepage: https://odigos.io
     formats:
