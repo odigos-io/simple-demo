@@ -15,7 +15,7 @@ jobs:
   ######################
   ####  MEMBERSHIP  ####
   ######################
-  release-membership:
+  membership:
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -62,7 +62,7 @@ jobs:
   ######################
   ####   FRONTEND   ####
   ######################
-  release-frontend:
+  frontend:
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -117,7 +117,7 @@ jobs:
   ######################
   ####   INVENTORY  ####
   ######################
-  release-inventory:
+  inventory:
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -173,7 +173,7 @@ jobs:
   ######################
   ####    COUPON    ####
   ######################
-  release-coupon:
+  coupon:
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -228,7 +228,7 @@ jobs:
   ######################
   ####    PRICING   ####
   ######################
-  release-pricing:
+  pricing:
     runs-on:
       labels: ubuntu-latest
     steps:
