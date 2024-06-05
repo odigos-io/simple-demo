@@ -42,15 +42,15 @@ app.post('/apply-coupon', (req, res) => {
     });
 });
 
+const server = app.listen(PORT, () => {
+  console.log(`Listening for requests on port ${PORT}`);
+});
+
 // Add signal handler to gracefully shutdown the server
 process.on('SIGTERM', () => {
   console.log('Received SIGTERM. Shutting down server.');
-  app.close(() => {
+  server.close(() => {
     console.log('Server shut down.');
     process.exit(0);
   });
-})
-
-app.listen(PORT, () => {
-  console.log(`Listening for requests on port ${PORT}`);
 });
