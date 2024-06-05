@@ -11,6 +11,7 @@ vendor: Odigos
 homepage: https://odigos.io
 depends:
 - nodejs
+- odigos-demo-membership
 contents:
 - src: distribution/systemd.service
   dst: /lib/systemd/system/odigos-demo-coupon.service

@@ -1,4 +1,4 @@
-name: odigos-demo-frontend-public
+name: odigos-demo-frontend
 arch: all
 platform: linux
 version: 1.0.0
@@ -22,6 +22,12 @@ overrides:
   rpm:
     depends:
     - java-17-openjdk-headless
+    - odigos-demo-inventory
+    - odigos-demo-pricing
+    - odigos-demo-coupon
   deb:
     depends:
     - openjdk-17-jre-headless
+    - odigos-demo-inventory
+    - odigos-demo-pricing
+    - odigos-demo-coupon

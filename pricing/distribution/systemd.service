@@ -3,13 +3,14 @@ Description=Odigos Demo Pricing Service
 After=network.target
 
 [Service]
-ExecStart=dotnet /opt/odigos-demo-pricing/pricing.dll
+#ExecStart=dotnet /opt/odigos-demo-pricing/pricing.dll
+ExecStart=/opt/odigos-demo-pricing/pricing
 KillMode=mixed
 Restart=on-failure
 Type=simple
 User=odigos
 Group=odigos
-Environment="PORT=8083"
+Environment="HTTP_PORTS=8083"
 
 [Install]
 WantedBy=multi-user.target

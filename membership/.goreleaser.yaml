@@ -13,7 +13,7 @@ builds:
     ldflags: "" # Ensure no stripping of symbols
 nfpms:
   - id: packages # this id is used in the publisher section to specify which artifacts to publish
-    package_name: membership
+    package_name: odigos-demo-membership
     contents:
       - src: distribution/membership/membership.service
         dst: /lib/systemd/system/membership.service
@@ -26,7 +26,7 @@ nfpms:
     formats:
       - deb
       - rpm
-    description: Odigos demo membership service
+    description: Demo Go application for testing Odigos
     file_name_template: "{{ .ConventionalFileName }}"
     maintainer: Odigos
 publishers:
