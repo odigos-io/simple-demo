@@ -70,7 +70,7 @@ jobs:
       - name: set new version as env
         run: |
           # echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "TAG=main" >> $GITHUB_ENV
+          echo "TAG=1.0.1" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         # with:
@@ -107,9 +107,7 @@ jobs:
         run: |
           docker build -t frontend .
           docker cp $(docker create --name tc frontend):/app ./dist && docker rm tc
-          ls -lah dist
-          ls -lah .
-          cat nfpm.yaml
+          sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
@@ -125,7 +123,7 @@ jobs:
       - name: set new version as env
         run: |
           # echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "TAG=main" >> $GITHUB_ENV
+          echo "TAG=1.0.1" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         # with:
@@ -166,6 +164,7 @@ jobs:
           docker cp tc:/app ./dist/app
           docker cp tc:/usr/local/lib/python3.11/site-packages ./dist/app/site-packages
           docker rm tc
+          sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
@@ -181,7 +180,7 @@ jobs:
       - name: set new version as env
         run: |
           # echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "TAG=main" >> $GITHUB_ENV
+          echo "TAG=1.0.1" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         # with:
@@ -221,6 +220,7 @@ jobs:
           mkdir -p ./dist/app
           docker cp tc:/app ./dist/app
           docker rm tc
+          sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
@@ -236,7 +236,7 @@ jobs:
       - name: set new version as env
         run: |
           # echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "TAG=main" >> $GITHUB_ENV
+          echo "TAG=1.0.1" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         # with:
@@ -276,6 +276,7 @@ jobs:
           mkdir -p ./dist/app
           docker cp tc:/app ./dist/app
           docker rm tc
+          sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
