@@ -3,7 +3,7 @@ Description=Odigos Demo Inventory Service
 After=network.target
 
 [Service]
-ExecStart=python3.11 /opt/odigos-demo-inventory/main.py
+ExecStart=python3.11 /opt/odigos-demo-inventory/app/main.py
 KillMode=mixed
 Restart=on-failure
 Type=simple

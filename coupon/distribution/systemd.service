@@ -3,7 +3,7 @@ Description=Odigos Demo Coupon Service
 After=network.target
 
 [Service]
-ExecStart=node /opt/odigos-demo-coupon/app.js
+ExecStart=node /opt/odigos-demo-coupon/app/app.js
 KillMode=mixed
 Restart=on-failure
 Type=simple

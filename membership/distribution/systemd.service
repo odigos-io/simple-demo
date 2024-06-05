@@ -3,7 +3,7 @@ Description=Odigos Demo Membership Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/odigos-membership
+ExecStart=/usr/bin/odigos-demo-membership
 KillMode=mixed
 Restart=on-failure
 Type=simple

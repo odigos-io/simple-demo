@@ -9,7 +9,7 @@ builds:
     goarch:
       - amd64
       - arm64
-    binary: odigos-membership
+    binary: odigos-demo-membership
     ldflags: "" # Ensure no stripping of symbols
 nfpms:
   - id: packages # this id is used in the publisher section to specify which artifacts to publish
