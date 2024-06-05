@@ -53,7 +53,7 @@ jobs:
         with:
             distribution: goreleaser
             version: latest
-            args: release --clean --snapshot
+            args: release --clean
             workdir: membership
         env:
             FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
