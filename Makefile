@@ -1,14 +1,15 @@
 PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+VERSION := v0.1
 
 .PHONY: generate-webapp
 generate-webapp:
 	@echo "Generating webapp..."
-	@cd $(PROJECT_DIR)frontend/webapp && yarn build
+	@cd $(PROJECT_DIR)frontend/webapp && yarn && yarn build
 	rm -rf $(PROJECT_DIR)/frontend/src/main/resources/static/*
 	cp -r $(PROJECT_DIR)frontend/webapp/out/* $(PROJECT_DIR)/frontend/src/main/resources/static/
 
 .PHONY: build-images
-build-images: generate-webapp
+build-images:
 	@echo "Building images..."
 	docker build -t dev/odigos-demo-frontend:dev $(PROJECT_DIR)frontend -f $(PROJECT_DIR)frontend/Dockerfile
 	docker build -t dev/inventory:dev $(PROJECT_DIR)inventory -f $(PROJECT_DIR)inventory/Dockerfile
@@ -35,10 +36,10 @@ deploy:
 	kubectl apply -f $(PROJECT_DIR)membership/deployment/
 
 .PHONY: build-push-images-prod
-build-push-images-prod: generate-webapp
+build-push-images-prod:
 	@echo "Building images..."
-	docker buildx build -t keyval/odigos-demo-frontend:v0.1 $(PROJECT_DIR)frontend -f $(PROJECT_DIR)frontend/Dockerfile --platform linux/amd64,linux/arm64 --push
-	docker buildx build -t keyval/odigos-demo-inventory:v0.1 $(PROJECT_DIR)inventory -f $(PROJECT_DIR)inventory/Dockerfile --platform linux/amd64,linux/arm64 --push
-	docker buildx build -t keyval/odigos-demo-pricing:v0.1 $(PROJECT_DIR)pricing -f $(PROJECT_DIR)pricing/Dockerfile --platform linux/amd64,linux/arm64 --push
-	docker buildx build -t keyval/odigos-demo-coupon:v0.1 $(PROJECT_DIR)coupon -f $(PROJECT_DIR)coupon/Dockerfile --platform linux/amd64,linux/arm64 --push
-	docker buildx build -t keyval/odigos-demo-membership:v0.1 $(PROJECT_DIR)membership -f $(PROJECT_DIR)membership/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t keyval/odigos-demo-frontend:${VERSION} $(PROJECT_DIR)frontend -f $(PROJECT_DIR)frontend/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t keyval/odigos-demo-inventory:${VERSION} $(PROJECT_DIR)inventory -f $(PROJECT_DIR)inventory/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t keyval/odigos-demo-pricing:${VERSION} $(PROJECT_DIR)pricing -f $(PROJECT_DIR)pricing/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t keyval/odigos-demo-coupon:${VERSION} $(PROJECT_DIR)coupon -f $(PROJECT_DIR)coupon/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t keyval/odigos-demo-membership:${VERSION} $(PROJECT_DIR)membership -f $(PROJECT_DIR)membership/Dockerfile --platform linux/amd64,linux/arm64 --push
