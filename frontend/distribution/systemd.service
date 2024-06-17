@@ -1,0 +1,18 @@
+[Unit]
+Description=Odigos Demo Frontend Service
+After=network.target
+
+[Service]
+ExecStart=java -jar /usr/share/java/odigos-demo-frontend.jar
+KillMode=mixed
+Restart=on-failure
+Type=simple
+User=odigos
+Group=odigos
+Environment="PORT=8080"
+Environment="INVENTORY_SERVICE_HOST=localhost:8082"
+Environment="PRICING_SERVICE_HOST=localhost:8083"
+Environment="COUPON_SERVICE_HOST=localhost:8084"
+
+[Install]
+WantedBy=multi-user.target

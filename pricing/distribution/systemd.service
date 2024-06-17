@@ -1,0 +1,16 @@
+[Unit]
+Description=Odigos Demo Pricing Service
+After=network.target
+
+[Service]
+#ExecStart=/opt/odigos-demo-pricing/pricing
+ExecStart=dotnet /opt/odigos-demo-pricing/app/pricing.dll
+KillMode=mixed
+Restart=on-failure
+Type=simple
+User=odigos
+Group=odigos
+Environment="HTTP_PORTS=8083"
+
+[Install]
+WantedBy=multi-user.target

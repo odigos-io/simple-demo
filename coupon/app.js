@@ -57,4 +57,4 @@ process.on('SIGTERM', () => {
     console.log('Server shut down.');
     process.exit(0);
   });
-})
+});

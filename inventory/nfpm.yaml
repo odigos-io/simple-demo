@@ -1,0 +1,22 @@
+name: odigos-demo-inventory
+arch: all
+platform: linux
+version: 1.0.0
+section: default
+priority: extra
+maintainer: Odigos
+description: |
+  Demo Python application for testing Odigos
+vendor: Odigos
+homepage: https://odigos.io
+depends:
+- python3.11
+contents:
+- src: distribution/systemd.service
+  dst: /lib/systemd/system/odigos-demo-inventory.service
+- src: ./dist/app
+  dst: /opt/odigos-demo-inventory
+scripts:
+  preinstall: ./distribution/preinstall.sh
+  postinstall: ./distribution/postinstall.sh
+  preremove: ./distribution/preremove.sh
