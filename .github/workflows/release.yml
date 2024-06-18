@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: keyval/odigos-${{ matrix.service }}:${{ env.TAG }}
+          tags: keyval/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
           platforms: linux/amd64,linux/arm64
           file: ${{ matrix.service }}/Dockerfile        
 
