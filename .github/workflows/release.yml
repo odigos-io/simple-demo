@@ -47,6 +47,7 @@ jobs:
           tags: keyval/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
           platforms: linux/amd64,linux/arm64
           file: ${{ matrix.service }}/Dockerfile        
+          context: ${{ matrix.service }}
 
   ######################
   ####  MEMBERSHIP  ####
