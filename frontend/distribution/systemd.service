@@ -3,7 +3,7 @@ Description=Odigos Demo Frontend Service
 After=network.target
 
 [Service]
-ExecStart=java -jar /opt/odigos-demo-frontend/odigos-demo-frontend.jar
+ExecStart=java -jar /opt/odigos-demo-frontend/frontend.jar
 KillMode=mixed
 Restart=on-failure
 RestartSec=1s
