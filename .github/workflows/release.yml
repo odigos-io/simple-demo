@@ -148,7 +148,7 @@ jobs:
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
           docker create --name tc ${{ matrix.service }}
           mkdir -p ./dist/app
-          docker cp tc:/app ./dist
+          sh ./distribution/copy-assets.sh
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
@@ -208,8 +208,7 @@ jobs:
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
           docker create --name tc ${{ matrix.service }}
           mkdir -p ./dist/app
-          docker cp tc:/app ./dist/app
-          docker cp tc:/usr/local/lib/python3.11/site-packages ./dist/app/site-packages
+          sh ./distribution/copy-assets.sh
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
@@ -269,7 +268,7 @@ jobs:
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
           docker create --name tc ${{ matrix.service }}
           mkdir -p ./dist/app
-          docker cp tc:/app ./dist/app
+          sh ./distribution/copy-assets.sh
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
@@ -332,7 +331,7 @@ jobs:
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
           docker create --name tc ${{ matrix.service }}
           mkdir -p ./dist/app
-          docker cp tc:/app ./dist/app
+          sh ./distribution/copy-assets.sh
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
