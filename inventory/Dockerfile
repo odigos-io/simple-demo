@@ -1,5 +1,5 @@
 # Stage 1: Build Stage
-FROM python:3.11 as builder
+FROM python:3.11 AS builder
 
 # Set environment variables for Python and prevent writing .pyc files
 ENV PYTHONDONTWRITEBYTECODE 1

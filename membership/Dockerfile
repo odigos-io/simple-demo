@@ -1,4 +1,4 @@
-FROM golang:1.21.4 as builder
+FROM golang:1.21.4 AS builder
 WORKDIR /go/src/app
 COPY . .
 RUN CGO_ENABLED=0 go build -o /go/bin/membership main.go

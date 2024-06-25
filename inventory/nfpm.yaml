@@ -10,7 +10,7 @@ description: |
 vendor: Odigos
 homepage: https://odigos.io
 depends:
-- python3.11
+- python3
 contents:
 - src: distribution/systemd.service
   dst: /lib/systemd/system/odigos-demo-inventory.service

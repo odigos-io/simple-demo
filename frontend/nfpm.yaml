@@ -12,8 +12,8 @@ homepage: https://odigos.io
 contents:
 - src: distribution/systemd.service
   dst: /lib/systemd/system/odigos-demo-frontend.service
-- src: ./dist/frontend.jar
-  dst: /usr/share/java/odigos-demo-frontend.jar
+- src: ./dist/app
+  dst: /opt/odigos-demo-frontend
 scripts:
   preinstall: ./distribution/preinstall.sh
   postinstall: ./distribution/postinstall.sh

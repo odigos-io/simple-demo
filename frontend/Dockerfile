@@ -1,4 +1,4 @@
-FROM node:20-alpine as fe-build
+FROM node:20-alpine AS fe-build
 USER node
 WORKDIR /home/node
 COPY webapp/package* webapp/yarn.lock /home/node/
