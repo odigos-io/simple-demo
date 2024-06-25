@@ -97,6 +97,12 @@ jobs:
   ####   FRONTEND   ####
   ######################
   frontend:
+    strategy:
+      matrix:
+        include:
+          - service: frontend
+            arch: amd64
+            pkg_arch: all
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -130,9 +136,11 @@ jobs:
           FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker build -t frontend .
+          docker buildx build --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
+          docker create --name tc ${{ matrix.service }}
           docker cp $(docker create --name tc frontend):/app ./dist && docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
+          sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
@@ -141,6 +149,12 @@ jobs:
   ####   INVENTORY  ####
   ######################
   inventory:
+    strategy:
+      matrix:
+        include:
+          - service: inventory
+            arch: amd64
+            pkg_arch: all
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -174,13 +188,14 @@ jobs:
           FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker build -t inventory .
-          docker create --name tc inventory
+          docker buildx build --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
+          docker create --name tc ${{ matrix.service }}
           mkdir -p ./dist/app
           docker cp tc:/app ./dist/app
           docker cp tc:/usr/local/lib/python3.11/site-packages ./dist/app/site-packages
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
+          sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
@@ -189,6 +204,12 @@ jobs:
   ####    COUPON    ####
   ######################
   coupon:
+    strategy:
+      matrix:
+        include:
+          - service: coupon
+            arch: amd64
+            pkg_arch: all
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -222,12 +243,13 @@ jobs:
           FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker build -t coupon .
-          docker create --name tc coupon
+          docker buildx build --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
+          docker create --name tc ${{ matrix.service }}
           mkdir -p ./dist/app
           docker cp tc:/app ./dist/app
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
+          sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
@@ -236,6 +258,15 @@ jobs:
   ####    PRICING   ####
   ######################
   pricing:
+    strategy:
+      matrix:
+        include:
+          - service: pricing
+            arch: amd64
+            pkg_arch: amd64
+          - service: pricing
+            arch: arm64
+            pkg_arch: arm64
     runs-on:
       labels: ubuntu-latest
     steps:
@@ -263,18 +294,19 @@ jobs:
         run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
 
       - name: Release
-        working-directory: pricing
+        working-directory: ${{ matrix.service }}
         env:
           FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
           FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker build -t pricing .
-          docker create --name tc pricing
+          docker buildx build --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
+          docker create --name tc ${{ matrix.service }}
           mkdir -p ./dist/app
           docker cp tc:/app ./dist/app
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
+          sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
           fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
