@@ -1,6 +1,9 @@
 name: Release Demo Services
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     tags:
       - "v*"
@@ -63,7 +66,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ env.TAG }}
+          # ref: ${{ env.TAG }}
 
       - name: Set env
         id: vars
@@ -125,7 +128,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ env.TAG }}
+          # ref: ${{ env.TAG }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -161,7 +164,8 @@ jobs:
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
+          cat nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
-          fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
-          fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.deb
+          # fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
+          # fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.deb
