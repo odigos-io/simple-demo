@@ -118,6 +118,12 @@ jobs:
           fetch-depth: 0
           # ref: ${{ env.TAG }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Install GemFury CLI
         run: |
           sudo bash -c "echo 'deb [trusted=yes] https://apt.fury.io/cli/ * *' > /etc/apt/sources.list.d/fury-cli.list"
@@ -169,6 +175,12 @@ jobs:
         with:
           fetch-depth: 0
           # ref: ${{ env.TAG }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Install GemFury CLI
         run: |
@@ -224,6 +236,12 @@ jobs:
         with:
           fetch-depth: 0
           # ref: ${{ env.TAG }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Install GemFury CLI
         run: |
@@ -281,6 +299,12 @@ jobs:
         with:
           fetch-depth: 0
           # ref: ${{ env.TAG }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Install GemFury CLI
         run: |
