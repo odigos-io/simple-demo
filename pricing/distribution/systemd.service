@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 #ExecStart=/opt/odigos-demo-pricing/pricing
-ExecStart=dotnet /opt/odigos-demo-pricing/app/pricing.dll
+ExecStart=dotnet /opt/odigos-demo-pricing/pricing.dll
 KillMode=mixed
 Restart=on-failure
 RestartSec=1s

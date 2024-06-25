@@ -159,7 +159,7 @@ jobs:
         run: |
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
           docker create --name tc ${{ matrix.service }}
-          mkdir -p ./dist/app
+          mkdir -p ./dist
           sh ./distribution/copy-assets.sh
           docker rm tc
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml

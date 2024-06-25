@@ -1,0 +1,7 @@
+distribution
+dist
+deployment
+Dockerfile
+.dockerignore
+.gitignore
+nfpm.yaml
