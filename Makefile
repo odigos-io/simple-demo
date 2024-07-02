@@ -1,5 +1,5 @@
 PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-VERSION := v0.1
+VERSION := v0.2
 
 .PHONY: generate-webapp
 generate-webapp:

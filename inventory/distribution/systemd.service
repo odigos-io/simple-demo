@@ -13,6 +13,7 @@ Type=simple
 User=odigos
 Group=odigos
 Environment="PORT=8082"
+# Not required, but here for testing PYTONPATH detection in the future(not in effect)
 Environment="PYTHONPATH=/opt/odigos-demo-inventory/site-packages"
 Environment="PYTHONDONTWRITEBYTECODE=1"
 Environment="PYTHONUNBUFFERED=1"
