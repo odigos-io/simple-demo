@@ -1,8 +1,13 @@
+import os
+import sys
+
+# append known location for deps in distributed packages
+dep_location = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'site-packages'))
+sys.path.append(dep_location)
+
 from flask import Flask, request, jsonify
 import time
 import signal
-import sys
-import os
 
 PORT = os.environ["PORT"] if "PORT" in os.environ else 8080
 
