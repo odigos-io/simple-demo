@@ -16,8 +16,15 @@ spec:
       containers:
       - name: coupon
         image: dev/coupon:dev
+        imagePullPolicy: IfNotPresent
         env:
           - name: MEMBERSHIP_SERVICE_HOST
             value: "membership:8080"
         ports:
         - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10        

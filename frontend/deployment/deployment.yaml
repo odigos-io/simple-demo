@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: dev/kv-shop-frontend:dev
+        image: dev/frontend:dev
         env:
         - name: INVENTORY_SERVICE_HOST
           value: inventory:8080
