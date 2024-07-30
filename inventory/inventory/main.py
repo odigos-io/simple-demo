@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 
 # append known location for deps in distributed packages
 dep_location = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'site-packages'))
@@ -10,6 +11,8 @@ import time
 import signal
 
 PORT = os.environ["PORT"] if "PORT" in os.environ else 8080
+
+logging.getLogger().setLevel(logging.INFO)
 
 app = Flask(__name__)
 
@@ -44,18 +47,18 @@ inventory_items = [
 
 @app.route('/inventory', methods=['GET'])
 def get_inventory():
-    print("Returning inventory")
+    logging.info("Returning inventory")
     return jsonify([item.__dict__ for item in inventory_items])
 
 @app.route('/buy', methods=['POST'])
 def buy_product():
     product_id = request.args.get('id', type=int)
-    print(f"Buying product with id {product_id}")
+    logging.info(f"Buying product with id {product_id}")
     time.sleep(1)
     return jsonify({"message": "Product purchased successfully"})
 
 def signal_handler(sig, frame):
-    print('Terminating inventory service')
+    logging.info('Terminating inventory service')
     sys.exit(0)
 
 if __name__ == '__main__':
