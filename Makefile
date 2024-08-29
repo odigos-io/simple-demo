@@ -46,10 +46,9 @@ build-push-images-prod:
 
 
 .PHONY: deploy-membership
-deploy-membership: 
+deploy-membership:
 	@echo "Deploying membership to Kubernetes..."
 	docker build -t dev/membership:dev $(PROJECT_DIR)membership -f $(PROJECT_DIR)membership/Dockerfile
 	kind load docker-image dev/membership:dev
 	kubectl apply -f $(PROJECT_DIR)membership/deployment/
 	kubectl rollout restart deployment membership
-	
