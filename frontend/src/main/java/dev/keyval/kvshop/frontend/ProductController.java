@@ -19,7 +19,7 @@ public class ProductController {
         this.couponService = couponService;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+   @CrossOrigin(origins = "*")
     @GetMapping("/products")
     public List<Product> getProducts() {
         List<Product> products = inventoryService.getInventory();
@@ -35,7 +35,7 @@ public class ProductController {
         return products;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+   @CrossOrigin(origins = "*")
     @PostMapping("/buy")
     public void buyProduct(@RequestParam(name ="id") int id) {
         // Validate price via pricing service
