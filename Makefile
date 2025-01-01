@@ -52,3 +52,35 @@ deploy-membership:
 	kind load docker-image dev/membership:dev
 	kubectl apply -f $(PROJECT_DIR)membership/deployment/
 	kubectl rollout restart deployment membership
+
+.PHONY: deploy-inventory
+deploy-inventory:
+	@echo "Deploying inventory to Kubernetes..."
+	docker build -t dev/inventory:dev $(PROJECT_DIR)inventory -f $(PROJECT_DIR)inventory/Dockerfile
+	kind load docker-image dev/inventory:dev
+	kubectl apply -f $(PROJECT_DIR)inventory/deployment/
+	kubectl rollout restart deployment inventory
+
+.PHONY: deploy-coupon
+deploy-coupon:
+	@echo "Deploying coupon to Kubernetes..."
+	docker build -t dev/coupon:dev $(PROJECT_DIR)coupon -f $(PROJECT_DIR)coupon/Dockerfile
+	kind load docker-image dev/coupon:dev
+	kubectl apply -f $(PROJECT_DIR)coupon/deployment/
+	kubectl rollout restart deployment coupon4
+
+.PHONY: deploy-pricing
+deploy-pricing:
+	@echo "Deploying pricing to Kubernetes..."
+	docker build -t dev/pricing:dev $(PROJECT_DIR)pricing -f $(PROJECT_DIR)pricing/Dockerfile
+	kind load docker-image dev/pricing:dev
+	kubectl apply -f $(PROJECT_DIR)pricing/deployment/
+	kubectl rollout restart deployment pricing
+
+.PHONY: deploy-frontend
+deploy-frontend:
+	@echo "Deploying frontend to Kubernetes..."
+	docker build -t dev/frontend:dev $(PROJECT_DIR)frontend -f $(PROJECT_DIR)frontend/Dockerfile
+	kind load docker-image dev/frontend:dev
+	kubectl apply -f $(PROJECT_DIR)frontend/deployment/
+	kubectl rollout restart deployment frontend
