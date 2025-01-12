@@ -23,7 +23,7 @@ RUN pip install poetry
 
 # Install project dependencies
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-dev
+    && poetry install
 
 # Stage 2: Runtime Stage
 FROM python:3.11-slim
