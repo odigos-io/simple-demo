@@ -54,8 +54,6 @@ spec:
       - name: frontend
         image: keyval/odigos-demo-frontend:v0.1.14
         imagePullPolicy: Always
-        securityContext:
-          runAsUser: 1000
         env:
         - name: INVENTORY_SERVICE_HOST
           value: inventory:8080
