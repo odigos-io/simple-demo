@@ -1,5 +1,6 @@
 PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 VERSION := v0.1
+REGISTRY := "us-central1-docker.pkg.dev/odigos-cloud/components"
 
 .PHONY: generate-webapp
 generate-webapp:
@@ -38,11 +39,11 @@ deploy:
 .PHONY: build-push-images-prod
 build-push-images-prod:
 	@echo "Building images..."
-	docker buildx build -t keyval/odigos-demo-frontend:${VERSION} $(PROJECT_DIR)frontend -f $(PROJECT_DIR)frontend/Dockerfile --platform linux/amd64,linux/arm64 --push
-	docker buildx build -t keyval/odigos-demo-inventory:${VERSION} $(PROJECT_DIR)inventory -f $(PROJECT_DIR)inventory/Dockerfile --platform linux/amd64,linux/arm64 --push
-	docker buildx build -t keyval/odigos-demo-pricing:${VERSION} $(PROJECT_DIR)pricing -f $(PROJECT_DIR)pricing/Dockerfile --platform linux/amd64,linux/arm64 --push
-	docker buildx build -t keyval/odigos-demo-coupon:${VERSION} $(PROJECT_DIR)coupon -f $(PROJECT_DIR)coupon/Dockerfile --platform linux/amd64,linux/arm64 --push
-	docker buildx build -t keyval/odigos-demo-membership:${VERSION} $(PROJECT_DIR)membership -f $(PROJECT_DIR)membership/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t ${REGISTRY}/odigos-demo-frontend:${VERSION} $(PROJECT_DIR)frontend -f $(PROJECT_DIR)frontend/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t ${REGISTRY}/odigos-demo-inventory:${VERSION} $(PROJECT_DIR)inventory -f $(PROJECT_DIR)inventory/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t ${REGISTRY}/odigos-demo-pricing:${VERSION} $(PROJECT_DIR)pricing -f $(PROJECT_DIR)pricing/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t ${REGISTRY}/odigos-demo-coupon:${VERSION} $(PROJECT_DIR)coupon -f $(PROJECT_DIR)coupon/Dockerfile --platform linux/amd64,linux/arm64 --push
+	docker buildx build -t ${REGISTRY}/odigos-demo-membership:${VERSION} $(PROJECT_DIR)membership -f $(PROJECT_DIR)membership/Dockerfile --platform linux/amd64,linux/arm64 --push
 
 
 .PHONY: deploy-membership
