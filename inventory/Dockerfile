@@ -2,8 +2,8 @@
 FROM python:3.11 AS builder
 
 # Set environment variables for Python and prevent writing .pyc files
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update \
@@ -16,21 +16,23 @@ RUN apt-get update \
 WORKDIR /app
 
 # Copy only the poetry files to the working directory
-COPY poetry.lock pyproject.toml inventory/ /app/
+COPY poetry.lock pyproject.toml README.md /app/
+
+COPY inventory/ /app/inventory
 
 # Install Poetry
 RUN pip install poetry
 
 # Install project dependencies
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-dev
+    && poetry install
 
 # Stage 2: Runtime Stage
 FROM python:3.11-slim
 
 # Set environment variables for Python and prevent writing .pyc files
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Create and set the working directory
 WORKDIR /app
