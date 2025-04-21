@@ -13,6 +13,7 @@ services:
       INVENTORY_SERVICE_HOST: inventory:8082
       PRICING_SERVICE_HOST: pricing:8083
       COUPON_SERVICE_HOST: coupon:8084
+      CURRENCY_SERVICE_HOST: currency:8085
   membership:
     build:
       context: ./membership
@@ -45,3 +46,10 @@ services:
     environment:
       PORT: 8084
       MEMBERSHIP_SERVICE_HOST: membership:8081
+  currency:
+    build:
+      context: ./currency
+    ports:
+      - "8085:8085"
+    environment:
+      PORT: 8085

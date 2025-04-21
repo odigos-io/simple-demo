@@ -14,7 +14,7 @@ type Product = {
 
 export default function Home() {
   // fetch products
-  const [data, setData] =  useState<Product[]>([])
+  const [data, setData] = useState<Product[]>([])
   const [isLoading, setLoading] = useState(true)
   useEffect(() => {
     fetch('/products')
@@ -23,20 +23,22 @@ export default function Home() {
         setData(data)
         setLoading(false)
       })
+      .catch((error) => {
+        console.error('Error fetching products:', error)
+        setLoading(false)
+      })
   }, [])
- 
+
   if (isLoading) return <p>Loading...</p>
   if (!data) return <p>No products data</p>
 
   return (
-    <main
-      className={` ${inter.className}`}
-    >
+    <main className={` ${inter.className}`}>
       <Header />
-      <div className="bg-gray-100 h-full grid grid-cols-6">
-      {data.map((product: any) => (
-        <ProductCard key={product.id} product={product} />)
-      )}
+      <div className='bg-gray-100 h-full grid grid-cols-6'>
+        {data.map((product: any) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
       </div>
     </main>
   )

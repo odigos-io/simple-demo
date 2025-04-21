@@ -1,9 +1,13 @@
 FROM node:20-alpine AS fe-build
-USER node
+USER root
 WORKDIR /home/node
 COPY webapp/package* webapp/yarn.lock /home/node/
 RUN yarn
 COPY webapp /home/node/
+RUN chown -R node:node /home/node
+USER node
+# make sure the .next directory exists and is writable
+RUN mkdir -p /home/node/.next && chown -R node:node /home/node/.next
 RUN yarn build
 
 FROM maven:3.8.5-openjdk-17 AS build
