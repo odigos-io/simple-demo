@@ -8,8 +8,8 @@ ENV PYTHONUNBUFFERED=1
 # Install system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        gcc \
-        libpq-dev \
+    gcc \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Create and set the working directory
@@ -47,4 +47,4 @@ EXPOSE 8080
 ENV PYTHONPATH=/bar
 
 # Command to run the application
-CMD ["python", "main.py"]
+CMD ["python", "inventory/main.py"]
