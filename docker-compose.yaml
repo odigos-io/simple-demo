@@ -1,0 +1,55 @@
+version: '3.8'
+
+name: demo
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      MEMBERSHIP_SERVICE_HOST: membership:8081
+      INVENTORY_SERVICE_HOST: inventory:8082
+      PRICING_SERVICE_HOST: pricing:8083
+      COUPON_SERVICE_HOST: coupon:8084
+      CURRENCY_SERVICE_HOST: currency:8085
+  membership:
+    build:
+      context: ./membership
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+  inventory:
+    build:
+      context: ./inventory
+    ports:
+      - "8082:8082"
+    environment:
+      PORT: 8082
+      PYTHONPATH: /opt/odigos-demo-inventory/site-packages
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
+  pricing:
+    build:
+      context: ./pricing
+    ports:
+      - "8083:8083"
+    environment:
+      HTTP_PORTS: 8083
+  coupon:
+    build:
+      context: ./coupon
+    ports:
+      - "8084:8084"
+    environment:
+      PORT: 8084
+      MEMBERSHIP_SERVICE_HOST: membership:8081
+  currency:
+    build:
+      context: ./currency
+    ports:
+      - "8085:8085"
+    environment:
+      PORT: 8085

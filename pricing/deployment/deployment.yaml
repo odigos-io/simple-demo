@@ -18,4 +18,3 @@ spec:
         image: dev/pricing:dev
         ports:
         - containerPort: 8080
-  

@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/google/uuid"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 const (
@@ -29,13 +34,32 @@ func getPortFromEnvOrDefault() int {
 	return port
 }
 
+var tracer = otel.Tracer("github.com/keyval-dev/test-apps/kv-shop/membership")
+
+func checkIfMember(ctx context.Context, userId uuid.UUID) bool {
+	_, span := tracer.Start(ctx, "checkIfMember")
+	defer span.End()
+
+	slog.Info("Checking if user is a member", "userId", userId)
+
+	// arbitrary decide if user is a member by it's id
+	isMember := userId.String()[29] >= '0' && userId.String()[29] <= '6'
+	span.SetAttributes(attribute.String("simple_demo.userId", userId.String()), attribute.Bool("simple_demo.is_member", isMember))
+
+	return isMember
+}
+
 func main() {
 	port := getPortFromEnvOrDefault()
 	slog.Info("Starting Membership service", "port", port)
 	http.HandleFunc("/isMember", func(writer http.ResponseWriter, request *http.Request) {
 		slog.Info("isMember called")
+
+		userId := uuid.New()
+
+		isMember := checkIfMember(request.Context(), userId)
 		res := IsMemberResponse{
-			IsMember: true,
+			IsMember: isMember,
 		}
 
 		data, err := json.Marshal(res)

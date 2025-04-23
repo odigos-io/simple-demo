@@ -3,13 +3,17 @@ Description=Odigos Demo Inventory Service
 After=network.target
 
 [Service]
-ExecStart=python3.11 /opt/odigos-demo-inventory/app/main.py
+ExecStart=python3 /opt/odigos-demo-inventory/main.py
 KillMode=mixed
 Restart=on-failure
+RestartSec=1s
+RestartSteps=1s
+RestartMaxDelaySec=1min
 Type=simple
 User=odigos
 Group=odigos
 Environment="PORT=8082"
+# Not required, but here for testing PYTONPATH detection in the future(not in effect)
 Environment="PYTHONPATH=/opt/odigos-demo-inventory/site-packages"
 Environment="PYTHONDONTWRITEBYTECODE=1"
 Environment="PYTHONUNBUFFERED=1"

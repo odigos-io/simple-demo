@@ -21,8 +21,8 @@ spec:
         app: jaeger
     spec:
       containers:
-      - image: jaegertracing/all-in-one:1.57
-        name: all-in-one
+      - image: jaegertracing/jaeger:2.1.0
+        name: jaeger-v2
 ---
 apiVersion: v1
 kind: Service

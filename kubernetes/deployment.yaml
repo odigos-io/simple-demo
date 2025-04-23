@@ -14,14 +14,14 @@ spec:
         app: coupon
     spec:
       containers:
-      - name: coupon
-        image: keyval/odigos-demo-coupon:v0.1
-        imagePullPolicy: Always
-        env:
-          - name: MEMBERSHIP_SERVICE_URL
-            value: "membership:8080"
-        ports:
-        - containerPort: 8080
+        - name: coupon
+          image: registry.odigos.io/odigos-demo-coupon:v0.1.15
+          imagePullPolicy: Always
+          env:
+            - name: MEMBERSHIP_SERVICE_HOST
+              value: 'membership:8080'
+          ports:
+            - containerPort: 8080
 ---
 kind: Service
 apiVersion: v1
@@ -51,32 +51,34 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: frontend
-        image: keyval/odigos-demo-frontend:v0.2
-        imagePullPolicy: Always
-        securityContext:
-          runAsUser: 1000
-        env:
-        - name: INVENTORY_SERVICE_HOST
-          value: inventory:8080
-        - name: PRICING_SERVICE_HOST
-          value: pricing:8080
-        - name: COUPON_SERVICE_HOST
-          value: coupon:8080
-        ports:
-        - containerPort: 8080
-        readinessProbe:
-          httpGet:
-            path: /actuator/health/readiness
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /actuator/health/liveness
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: frontend
+          image: registry.odigos.io/odigos-demo-frontend:v0.1.15
+          imagePullPolicy: Always
+          securityContext:
+            runAsUser: 1000
+          env:
+            - name: INVENTORY_SERVICE_HOST
+              value: inventory:8080
+            - name: PRICING_SERVICE_HOST
+              value: pricing:8080
+            - name: COUPON_SERVICE_HOST
+              value: coupon:8080
+            - name: CURRENCY_SERVICE_HOST
+              value: currency:8080
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ---
 kind: Service
 apiVersion: v1
@@ -106,11 +108,11 @@ spec:
         app: inventory
     spec:
       containers:
-      - name: inventory
-        image: keyval/odigos-demo-inventory:v0.1
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
+        - name: inventory
+          image: registry.odigos.io/odigos-demo-inventory:v0.1.15
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
 ---
 kind: Service
 apiVersion: v1
@@ -140,11 +142,11 @@ spec:
         app: membership
     spec:
       containers:
-      - name: membership
-        image: keyval/odigos-demo-membership:v0.1
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
+        - name: membership
+          image: registry.odigos.io/odigos-demo-membership:v0.1.15
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
 ---
 kind: Service
 apiVersion: v1
@@ -174,11 +176,11 @@ spec:
         app: pricing
     spec:
       containers:
-      - name: pricing
-        image: keyval/odigos-demo-pricing:v0.1
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
+        - name: pricing
+          image: registry.odigos.io/odigos-demo-pricing:v0.1.15
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
 ---
 kind: Service
 apiVersion: v1
@@ -187,6 +189,40 @@ metadata:
 spec:
   selector:
     app: pricing
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currency
+  labels:
+    app: currency
+spec:
+  selector:
+    matchLabels:
+      app: currency
+  template:
+    metadata:
+      labels:
+        app: currency
+    spec:
+      containers:
+        - name: currency
+          image: registry.odigos.io/odigos-demo-currency:v0.1.15
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: currency
+spec:
+  selector:
+    app: currency
   ports:
     - protocol: TCP
       port: 8080
