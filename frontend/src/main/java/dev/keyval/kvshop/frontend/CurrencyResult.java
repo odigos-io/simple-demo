@@ -10,7 +10,7 @@ public class CurrencyResult {
         this.currency = currency;
     }
 
-    public int getCurrency() {
+    public int getUsdIlsConversion() {
         return currency;
     }
 }

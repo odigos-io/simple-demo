@@ -23,11 +23,11 @@ public class ProductController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/currency")
-    public int getCurrency() {
-        int currency = currencyService.getCurrency();
+    @GetMapping("/usd-ils")
+    public int getUsdIlsConversion() {
+        int ilsConversionRate = currencyService.getUsdIlsConversion();
 
-        return currency;
+        return ilsConversionRate;
     }
 
     @CrossOrigin(origins = "*")
@@ -51,7 +51,11 @@ public class ProductController {
     public void buyProduct(@RequestParam(name = "id") int id) {
         // Validate price via pricing service
         double price = pricingService.getPrice(id);
-        System.out.println("Buying product with id " + id + " for $" + price);
+        int ilsConversionRate = currencyService.getUsdIlsConversion();
+
+        String usdPrice = ("$" + price + " USD");
+        String ilsPrice = ("ִ₪" + (price * ilsConversionRate) + " ILS");
+        System.out.println("Buying product with id " + id + " for " + usdPrice + " (converted to ִִִ" + ilsPrice + ")");
 
         // Call inventory service to buy product
         this.inventoryService.buy(id);

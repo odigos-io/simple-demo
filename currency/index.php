@@ -14,35 +14,37 @@ $logger = new Logger('currency-server');
 $logger->pushHandler(new StreamHandler('php://stdout', Level::Info));
 
 $app = AppFactory::create();
-$dice = new Dice($logger);
 
-$app->get('/currency', function (Request $request, Response $response) use ($logger, $dice) {
-  $result = $dice->rollOnce();
-  $logger->info("Got random currency price.", ['result' => $result]);
-
-  $response = $response->withHeader('Content-Type', 'application/json');
-  $response->getBody()->write(json_encode($result));
-  return $response;
-});
-
-$app->get('/rolldice', function (Request $request, Response $response) use ($logger, $dice) {
+$app->get('/usd-ils', function (Request $request, Response $response) use ($logger) {
   $params = $request->getQueryParams();
+  $logger->info("Got request for USD to ILS conversion.", ['params' => $params]);
 
-  if (isset($params['rolls'])) {
-    $result = $dice->roll($params['rolls']);
-  } else {
-    $result = $dice->rollOnce();
-  }
-
-  if (isset($params['player'])) {
-    $logger->info("A player is rolling the dice.", ['player' => $params['player'], 'result' => $result]);
-  } else {
-    $logger->info("Anonymous player is rolling the dice.", ['result' => $result]);
-  }
+  $result = (new Dice($logger))->rollOnce();
+  $logger->info("Got value of 1 USD in ILS.", ['result' => $result]);
 
   $response = $response->withHeader('Content-Type', 'application/json');
   $response->getBody()->write(json_encode($result));
   return $response;
 });
+
+// $app->get('/rolldice', function (Request $request, Response $response) use ($logger, $dice) {
+//   $params = $request->getQueryParams();
+
+//   if (isset($params['rolls'])) {
+//     $result = $dice->roll($params['rolls']);
+//   } else {
+//     $result = $dice->rollOnce();
+//   }
+
+//   if (isset($params['player'])) {
+//     $logger->info("A player is rolling the dice.", ['player' => $params['player'], 'result' => $result]);
+//   } else {
+//     $logger->info("Anonymous player is rolling the dice.", ['result' => $result]);
+//   }
+
+//   $response = $response->withHeader('Content-Type', 'application/json');
+//   $response->getBody()->write(json_encode($result));
+//   return $response;
+// });
 
 $app->run();

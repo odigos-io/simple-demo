@@ -4,7 +4,7 @@ const Header = () => {
   const [data, setData] = useState(null)
   const [isLoading, setLoading] = useState(true)
   useEffect(() => {
-    fetch('/currency')
+    fetch('/usd-ils')
       .then((res) => res.json())
       .then((data) => {
         setData(data)

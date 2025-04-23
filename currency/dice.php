@@ -21,7 +21,7 @@ class Dice
   public function rollOnce()
   {
     $result = random_int(1, 6);
-    $this->logger->info("dice rolled", ['result' => $result]);
+    $this->logger->info("Dice rolled!", ['result' => $result]);
     return $result;
   }
 }
