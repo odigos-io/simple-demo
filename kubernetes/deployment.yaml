@@ -19,7 +19,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: MEMBERSHIP_SERVICE_HOST
-              value: 'membership:8080'
+              value: membership:8080
           ports:
             - containerPort: 8080
 ---
@@ -53,7 +53,7 @@ spec:
       containers:
         - name: frontend
           image: registry.odigos.io/odigos-demo-frontend:v0.1.15
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: INVENTORY_SERVICE_HOST
               value: inventory:8080
@@ -198,7 +198,7 @@ spec:
       containers:
         - name: currency
           image: registry.odigos.io/odigos-demo-currency:v0.1.15
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
 ---
