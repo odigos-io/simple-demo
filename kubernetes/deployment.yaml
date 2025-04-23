@@ -212,7 +212,7 @@ spec:
       containers:
         - name: currency
           image: registry.odigos.io/odigos-demo-currency:v0.1.15
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
 ---
