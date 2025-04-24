@@ -15,15 +15,15 @@ $logger->pushHandler(new StreamHandler('php://stdout', Level::Info));
 
 $app = AppFactory::create();
 
-$app->get('/usd-ils', function (Request $request, Response $response) use ($logger) {
-  $params = $request->getQueryParams();
-  $logger->info("Got request for USD to ILS conversion.", ['params' => $params]);
+$app->get('/rate/{currencyPair}', function (Request $request, Response $response, array $args) use ($logger) {
+  $currencyPair = $args['currencyPair'];
+  $logger->info("Got request...", ['currencyPair' => $currencyPair]);
 
-  $result = (new Dice($logger))->rollOnce();
-  $logger->info("Got value of 1 USD in ILS.", ['result' => $result]);
+  $conversionRate = (new Dice($logger))->rollOnce();
+  $logger->info("Got conversion rate for pair:", ['currencyPair' => $currencyPair, 'conversionRate' => $conversionRate]);
 
   $response = $response->withHeader('Content-Type', 'application/json');
-  $response->getBody()->write(json_encode($result));
+  $response->getBody()->write(json_encode(['conversionRate' => $conversionRate]));
   return $response;
 });
 

@@ -1,16 +1,30 @@
 package dev.keyval.kvshop.frontend;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CurrencyResult {
-    private int currency;
+    @JsonProperty("currencyPair")
+    private String currencyPair;
+
+    @JsonProperty("conversionRate")
+    private int conversionRate;
 
     public CurrencyResult() {
+        // Default constructor for deserialization
     }
 
-    public CurrencyResult(int currency) {
-        this.currency = currency;
+    public CurrencyResult(String currencyPair, int conversionRate) {
+        // Constructor for initialization
+        this.currencyPair = currencyPair;
+        this.conversionRate = conversionRate;
     }
 
-    public int getUsdIlsConversion() {
-        return currency;
+    public String getCurrencyPair() {
+        return currencyPair;
     }
+
+    public int getConversionRate() {
+        return conversionRate;
+    }
+
 }

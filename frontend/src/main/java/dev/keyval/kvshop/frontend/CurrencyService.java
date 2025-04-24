@@ -19,15 +19,13 @@ public class CurrencyService {
         this.currencyServiceHost = currencyServiceHost;
     }
 
-    public int getUsdIlsConversion() {
-        RestTemplate restTemplate = new RestTemplate();
+    public int getConversionRate(String currencyPair) {
+        String url = "http://" + currencyServiceHost + "/rate/" + currencyPair;
+        CurrencyResult res = (new RestTemplate()).getForObject(url, CurrencyResult.class);
 
-        String url = "http://" + currencyServiceHost + "/usd-ils";
-        CurrencyResult res = restTemplate.getForObject(url, CurrencyResult.class);
+        int conversionRate = res.getConversionRate();
+        log.info("Fetched conversion rate from currency service, got result:" + conversionRate);
 
-        int currency = res.getUsdIlsConversion();
-        log.info("Fetched currency from currency service, got result: {}", currency);
-
-        return currency;
+        return conversionRate;
     }
 }

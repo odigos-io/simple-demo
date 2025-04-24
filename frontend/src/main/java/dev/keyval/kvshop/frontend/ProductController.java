@@ -25,7 +25,7 @@ public class ProductController {
     @CrossOrigin(origins = "*")
     @GetMapping("/usd-ils")
     public int getUsdIlsConversion() {
-        int ilsConversionRate = currencyService.getUsdIlsConversion();
+        int ilsConversionRate = currencyService.getConversionRate("usd-ils");
 
         return ilsConversionRate;
     }
@@ -51,7 +51,7 @@ public class ProductController {
     public void buyProduct(@RequestParam(name = "id") int id) {
         // Validate price via pricing service
         double price = pricingService.getPrice(id);
-        int ilsConversionRate = currencyService.getUsdIlsConversion();
+        int ilsConversionRate = currencyService.getConversionRate("usd-ils");
 
         String usdPrice = ("$" + price + " USD");
         String ilsPrice = ("ִ₪" + (price * ilsConversionRate) + " ILS");
