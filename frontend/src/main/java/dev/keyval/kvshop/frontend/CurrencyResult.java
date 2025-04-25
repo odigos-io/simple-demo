@@ -19,12 +19,19 @@ public class CurrencyResult {
         this.conversionRate = conversionRate;
     }
 
+    public void setCurrencyPair(String currencyPair) {
+        this.currencyPair = currencyPair;
+    }
+
     public String getCurrencyPair() {
         return currencyPair;
+    }
+
+    public void setConversionRate(int conversionRate) {
+        this.conversionRate = conversionRate;
     }
 
     public int getConversionRate() {
         return conversionRate;
     }
-
 }

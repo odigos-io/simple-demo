@@ -15,7 +15,22 @@ $logger->pushHandler(new StreamHandler('php://stdout', Level::Info));
 
 $app = AppFactory::create();
 
-$app->get('/rate/{currencyPair}', function (Request $request, Response $response, array $args) use ($logger) {
+$app->addErrorMiddleware(true, true, true)->setDefaultErrorHandler(function (
+  Request $request,
+  Throwable $exception,
+  bool $displayErrorDetails
+) use ($app) {
+  $response = $app->getResponseFactory()->createResponse();
+  $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+  $response->getBody()->write(json_encode(['error' => $exception->getMessage()]));
+  return $response;
+});
+
+$app->get('/rate/{currencyPair}', function (
+  Request $request,
+  Response $response,
+  array $args
+) use ($logger) {
   $currencyPair = $args['currencyPair'];
   $logger->info("Got request...", ['currencyPair' => $currencyPair]);
 

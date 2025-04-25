@@ -14,8 +14,11 @@ public class ProductController {
     private final CouponService couponService;
 
     @Autowired
-    public ProductController(CurrencyService currencyService, InventoryService inventoryService,
-            PricingService pricingService, CouponService couponService) {
+    public ProductController(
+            CurrencyService currencyService,
+            InventoryService inventoryService,
+            PricingService pricingService,
+            CouponService couponService) {
         this.currencyService = currencyService;
         this.inventoryService = inventoryService;
         this.pricingService = pricingService;
