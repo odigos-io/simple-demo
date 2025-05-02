@@ -2,6 +2,12 @@ FROM php:8.2-cli
 WORKDIR /app
 COPY . /app
 
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    zip \
+    unzip
+
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer && \
   composer install
