@@ -47,7 +47,7 @@ jobs:
       - name: Login to Artifact Registry
         uses: docker/login-action@v3
         with:
-          registry: us-central1-docker.pkg.dev/odigos-cloud/components
+          registry: us-central1-docker.pkg.dev
           username: oauth2accesstoken
           password: ${{ steps.gcp-auth.outputs.access_token }}
 
