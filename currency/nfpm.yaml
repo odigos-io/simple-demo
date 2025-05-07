@@ -1,0 +1,22 @@
+name: odigos-demo-currency
+arch: all
+platform: linux
+version: 1.0.0
+section: default
+priority: extra
+maintainer: Odigos
+description: |
+  Demo PHP application for testing Odigos
+vendor: Odigos
+homepage: https://odigos.io
+depends:
+  - php
+contents:
+  - src: distribution/systemd.service
+    dst: /lib/systemd/system/odigos-demo-currency.service
+  - src: ./dist/app
+    dst: /opt/odigos-demo-currency
+scripts:
+  preinstall: ./distribution/preinstall.sh
+  postinstall: ./distribution/postinstall.sh
+  preremove: ./distribution/preremove.sh
