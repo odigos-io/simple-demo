@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1); // Enables strict types for the entire file
+declare(ticks=1); // Enables signal handling for every tickable statement
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -61,5 +64,12 @@ $app->get('/rate/{currencyPair}', function (
 //   $response->getBody()->write(json_encode($result));
 //   return $response;
 // });
+
+// Register a signal handler for SIGTERM
+$shutdown = false;
+pcntl_signal(SIGTERM, function ($signo) use (&$shutdown, $logger) {
+  $logger->info("Received SIGTERM, shutting down gracefully...");
+  $shutdown = true;
+});
 
 $app->run();
