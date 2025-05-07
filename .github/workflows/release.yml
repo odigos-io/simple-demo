@@ -3,14 +3,13 @@ name: Release Demo Services
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 permissions:
   contents: read
   id-token: 'write'
 
 jobs:
-
   publish-docker-images:
     strategy:
       matrix:
@@ -44,20 +43,19 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           access_token_lifetime: 1200s
-        
+
       - name: Login to Artifact Registry
         uses: docker/login-action@v3
         with:
-          registry: us-central1-docker.pkg.dev
+          registry: us-central1-docker.pkg.dev/odigos-cloud/components
           username: oauth2accesstoken
           password: ${{ steps.gcp-auth.outputs.access_token }}
-
 
       - name: Build and Push Docker Image for ${{ matrix.service }}
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: keyval/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
+          tags: us-central1-docker.pkg.dev/odigos-cloud/components/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
           platforms: linux/amd64,linux/arm64
           file: ${{ matrix.service }}/Dockerfile
           context: ${{ matrix.service }}
@@ -69,7 +67,6 @@ jobs:
     runs-on:
       labels: ubuntu-latest
     steps:
-
       - name: Store new version in env
         run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
 
@@ -93,19 +90,19 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: '1.22'
 
       - name: Release Membership Linux Package
         uses: goreleaser/goreleaser-action@v5
         with:
-            distribution: goreleaser
-            version: latest
-            args: release --clean
-            workdir: membership
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+          workdir: membership
         env:
-            FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
-            FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
+          FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ##############################
   ####  Linux pkg via NPFM  ####
   ##############################
@@ -122,6 +119,9 @@ jobs:
           - service: coupon
             arch: amd64
             pkg_arch: all
+          - service: currency
+            arch: amd64
+            pkg_arch: all
           - service: pricing
             arch: amd64
             pkg_arch: amd64
@@ -131,7 +131,6 @@ jobs:
     runs-on:
       labels: ubuntu-latest
     steps:
-
       - name: Store new version in env
         run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
 
@@ -155,7 +154,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: '1.22'
 
       - name: Install nfpm
         run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
