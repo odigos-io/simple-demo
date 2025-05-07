@@ -17,7 +17,7 @@ Simple Demo contains the following services:
 | Pricing    | .NET       | 8.0                  |
 | Membership | Go         | 1.21                 |
 | Coupon     | JavaScript | NodeJS 18.3.0        |
-| Currency   | PHP        | 8.2.\*               |
+| Currency   | PHP        | 8.2.28 (FPM)         |
 
 ## Running locally
 
