@@ -18,4 +18,32 @@ spec:
           image: dev/currency:dev
           imagePullPolicy: IfNotPresent
           ports:
+            - containerPort: 9000
+        - name: nginx
+          image: nginx:latest
+          ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: currency-nginx-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: currency-nginx-config
+data:
+  nginx.conf: |
+    server {
+        listen 8080;
+        server_name localhost;
+
+        location / {
+            include fastcgi_params;
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_param SCRIPT_FILENAME /app/index.php;
+        }
+    }

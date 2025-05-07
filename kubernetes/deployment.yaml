@@ -1,3 +1,6 @@
+##################################################
+# Coupon (JavaScript)
+##################################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +18,7 @@ spec:
     spec:
       containers:
         - name: coupon
-          image: registry.odigos.io/odigos-demo-coupon:v0.1.15
+          image: registry.odigos.io/odigos-demo-coupon:v0.1.16
           imagePullPolicy: Always
           env:
             - name: MEMBERSHIP_SERVICE_HOST
@@ -34,7 +37,49 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+
 ---
+##################################################
+# Currency (PHP)
+##################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currency
+  labels:
+    app: currency
+spec:
+  selector:
+    matchLabels:
+      app: currency
+  template:
+    metadata:
+      labels:
+        app: currency
+    spec:
+      containers:
+        - name: currency
+          image: registry.odigos.io/odigos-demo-currency:v0.1.16
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: currency
+spec:
+  selector:
+    app: currency
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+##################################################
+# Frontend (Java)
+##################################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,7 +97,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: registry.odigos.io/odigos-demo-frontend:v0.1.15
+          image: registry.odigos.io/odigos-demo-frontend:v0.1.16
           imagePullPolicy: Always
           env:
             - name: INVENTORY_SERVICE_HOST
@@ -77,7 +122,11 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+
 ---
+##################################################
+# Inventory (Python)
+##################################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -95,7 +144,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: registry.odigos.io/odigos-demo-inventory:v0.1.15
+          image: registry.odigos.io/odigos-demo-inventory:v0.1.16
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -111,7 +160,11 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+
 ---
+##################################################
+# Membership (Golang)
+##################################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -129,7 +182,7 @@ spec:
     spec:
       containers:
         - name: membership
-          image: registry.odigos.io/odigos-demo-membership:v0.1.15
+          image: registry.odigos.io/odigos-demo-membership:v0.1.16
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -145,7 +198,11 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+
 ---
+##################################################
+# Pricing (.NET)
+##################################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -163,7 +220,7 @@ spec:
     spec:
       containers:
         - name: pricing
-          image: registry.odigos.io/odigos-demo-pricing:v0.1.15
+          image: registry.odigos.io/odigos-demo-pricing:v0.1.16
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -175,40 +232,6 @@ metadata:
 spec:
   selector:
     app: pricing
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: currency
-  labels:
-    app: currency
-spec:
-  selector:
-    matchLabels:
-      app: currency
-  template:
-    metadata:
-      labels:
-        app: currency
-    spec:
-      containers:
-        - name: currency
-          image: registry.odigos.io/odigos-demo-currency:v0.1.15
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8080
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: currency
-spec:
-  selector:
-    app: currency
   ports:
     - protocol: TCP
       port: 8080

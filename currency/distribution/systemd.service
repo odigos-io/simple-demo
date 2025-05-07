@@ -1,9 +1,10 @@
 [Unit]
-Description=Odigos Demo Currency Service
+Description=PHP-FPM and Nginx Service
 After=network.target
 
 [Service]
-ExecStart=php -S -t /opt/odigos-demo-currency/index.php
+WorkingDirectory=/opt/odigos-demo-currency
+ExecStart=/bin/sh -c "php-fpm & nginx -g 'daemon off;'"
 KillMode=mixed
 Restart=on-failure
 RestartSec=1s

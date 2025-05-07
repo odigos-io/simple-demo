@@ -1,5 +1,5 @@
 PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-VERSION := v0.1.15
+VERSION := v0.1.16
 REGISTRY := us-central1-docker.pkg.dev/odigos-cloud/components
 
 .PHONY: generate-webapp
