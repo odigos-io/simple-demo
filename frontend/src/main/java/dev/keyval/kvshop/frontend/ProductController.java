@@ -26,11 +26,11 @@ public class ProductController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("/usd-ils")
-    public int getUsdIlsConversion() {
-        int ilsConversionRate = currencyService.getConversionRate("usd-ils");
+    @GetMapping("/rate/{currencyPair}")
+    public int getConversionRate(@PathVariable String currencyPair) {
+        int conversionRate = currencyService.getConversionRate(currencyPair);
 
-        return ilsConversionRate;
+        return conversionRate;
     }
 
     @CrossOrigin(origins = "*")
@@ -54,11 +54,11 @@ public class ProductController {
     public void buyProduct(@RequestParam(name = "id") int id) {
         // Validate price via pricing service
         double price = pricingService.getPrice(id);
-        int ilsConversionRate = currencyService.getConversionRate("usd-ils");
+        int conversionRate = currencyService.getConversionRate("usd-eur");
 
         String usdPrice = ("$" + price + " USD");
-        String ilsPrice = ("ִ₪" + (price * ilsConversionRate) + " ILS");
-        System.out.println("Buying product with id " + id + " for " + usdPrice + " (converted to ִִִ" + ilsPrice + ")");
+        String eurPrice = ("ִ€" + (price * conversionRate) + " EUR");
+        System.out.println("Buying product with id " + id + " for " + usdPrice + " (converted to ִִִ" + eurPrice + ")");
 
         // Call inventory service to buy product
         this.inventoryService.buy(id);
