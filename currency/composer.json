@@ -6,6 +6,7 @@
     "php": "8.2.*",
     "slim/slim": "^4",
     "slim/psr7": "^1",
-    "monolog/monolog": "^3.9"
+    "monolog/monolog": "^3.9",
+    "guzzlehttp/guzzle": "^7.9"
   }
 }

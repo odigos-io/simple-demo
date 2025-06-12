@@ -9,6 +9,8 @@ use Slim\Factory\AppFactory;
 use Monolog\Logger;
 use Monolog\Level;
 use Monolog\Handler\StreamHandler;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 require __DIR__ . '/vendor/autoload.php';
 require('dice.php');
@@ -37,33 +39,64 @@ $app->get('/rate/{currencyPair}', function (
   $currencyPair = $args['currencyPair'];
   $logger->info("Got request...", ['currencyPair' => $currencyPair]);
 
-  $conversionRate = (new Dice($logger))->rollOnce();
-  $logger->info("Got conversion rate for pair:", ['currencyPair' => $currencyPair, 'conversionRate' => $conversionRate]);
+  $parts = explode('-', $currencyPair);
+  $currency1 = $parts[0] ?? null;
+  $currency2 = $parts[1] ?? null;
 
-  $response = $response->withHeader('Content-Type', 'application/json');
-  $response->getBody()->write(json_encode(['conversionRate' => $conversionRate]));
-  return $response;
+  if (!$currency1 || !$currency2) {
+    return $response->withStatus(400)->withHeader('Content-Type', 'application/json')
+      ->getBody()->write(json_encode(['error' => 'Invalid currency pair']));
+  }
+
+  $geoServiceHost = getenv('GEOLOCATION_SERVICE_HOST');
+  $client = new Client(['base_uri' => "http://$geoServiceHost"]);
+
+  try {
+    $res1 = $client->request('GET', "/location/$currency1", ['headers' => ['Accept' => 'application/json']]);
+    $locationInfo1 = json_decode((string) $res1->getBody(), true);
+
+    $res2 = $client->request('GET', "/location/$currency2", ['headers' => ['Accept' => 'application/json']]);
+    $locationInfo2 = json_decode((string) $res2->getBody(), true);
+
+    $conversionRate = (new Dice($logger))->rollOnce();
+
+    $convertedString = sprintf(
+      "1 %s %s = %s %s %s",
+      $locationInfo1['ticker'],
+      $locationInfo1['flag'],
+      $conversionRate,
+      $locationInfo2['ticker'],
+      $locationInfo2['flag']
+    );
+
+    $logger->info("Got conversion rate for pair:", [
+      'currencyPair' => $currencyPair,
+      'conversionRate' => $conversionRate,
+      'convertedString' => $convertedString
+    ]);
+
+    $response->withStatus(200)->withHeader('Content-Type', 'application/json')->getBody()->write(
+      json_encode([
+        'conversionRate' => $conversionRate,
+        'convertedString' => $convertedString
+      ])
+    );
+
+    return $response;
+  } catch (RequestException $e) {
+    $logger->error("GeoService call failed", [
+      'message' => $e->getMessage(),
+      'currencyPair' => $currencyPair
+    ]);
+
+    $response->withStatus(502)->withHeader('Content-Type', 'application/json')->getBody()->write(
+      json_encode([
+        'error' => 'Failed to fetch location data'
+      ])
+    );
+    return $response;
+  }
 });
-
-// $app->get('/rolldice', function (Request $request, Response $response) use ($logger, $dice) {
-//   $params = $request->getQueryParams();
-
-//   if (isset($params['rolls'])) {
-//     $result = $dice->roll($params['rolls']);
-//   } else {
-//     $result = $dice->rollOnce();
-//   }
-
-//   if (isset($params['player'])) {
-//     $logger->info("A player is rolling the dice.", ['player' => $params['player'], 'result' => $result]);
-//   } else {
-//     $logger->info("Anonymous player is rolling the dice.", ['result' => $result]);
-//   }
-
-//   $response = $response->withHeader('Content-Type', 'application/json');
-//   $response->getBody()->write(json_encode($result));
-//   return $response;
-// });
 
 // Register a signal handler for SIGTERM
 $shutdown = false;

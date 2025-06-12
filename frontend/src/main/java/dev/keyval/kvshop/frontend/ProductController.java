@@ -27,10 +27,11 @@ public class ProductController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/rate/{currencyPair}")
-    public int getConversionRate(@PathVariable String currencyPair) {
-        int conversionRate = currencyService.getConversionRate(currencyPair);
+    public String getConversionRate(@PathVariable String currencyPair) {
+        CurrencyResult currencyInfo = currencyService.getCurrencyInfo(currencyPair);
+        String currencyString = currencyInfo.getConvertedString();
 
-        return conversionRate;
+        return currencyString;
     }
 
     @CrossOrigin(origins = "*")
@@ -54,7 +55,10 @@ public class ProductController {
     public void buyProduct(@RequestParam(name = "id") int id) {
         // Validate price via pricing service
         double price = pricingService.getPrice(id);
-        int conversionRate = currencyService.getConversionRate("usd-eur");
+
+        String currencyPair = "usd-eur";
+        CurrencyResult currencyInfo = currencyService.getCurrencyInfo(currencyPair);
+        int conversionRate = currencyInfo.getConversionRate();
 
         String usdPrice = ("$" + price + " USD");
         String eurPrice = ("ִ€" + (price * conversionRate) + " EUR");

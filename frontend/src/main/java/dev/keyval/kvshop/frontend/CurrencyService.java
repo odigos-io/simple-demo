@@ -21,14 +21,14 @@ public class CurrencyService {
 
     private final String currencyServiceHost;
 
-    private static final Logger log = LoggerFactory.getLogger(CouponService.class);
+    private static final Logger log = LoggerFactory.getLogger(CurrencyService.class);
 
     @Autowired
     public CurrencyService(@Value("${CURRENCY_SERVICE_HOST}") String currencyServiceHost) {
         this.currencyServiceHost = currencyServiceHost;
     }
 
-    public int getConversionRate(String currencyPair) {
+    public CurrencyResult getCurrencyInfo(String currencyPair) {
         try {
             String url = "http://" + currencyServiceHost + "/rate/" + currencyPair;
             RestTemplate restTemplate = new RestTemplate();
@@ -60,25 +60,9 @@ public class CurrencyService {
                 log.error(msg);
                 throw new IllegalStateException(msg);
             }
+            log.info("Successfully fetched from currency service: " + body);
 
-            int conversionRate = body.getConversionRate();
-            log.info("Successfully fetched conversion rate from currency service: " + conversionRate);
-
-            return conversionRate;
-
-            // CurrencyResult convertedObject = restTemplate.getForObject(url,
-            // CurrencyResult.class);
-
-            // if (convertedObject == null) {
-            // log.error("Failed to fetch conversion rate: response body from currency
-            // service is null");
-            // throw new IllegalStateException("Currency service returned null response");
-            // }
-
-            // int conversionRate = convertedObject.getConversionRate();
-            // log.info("Fetched conversion rate from currency service: " + conversionRate);
-
-            // return conversionRate;
+            return body;
         } catch (UnknownContentTypeException ex) {
             System.err.println("Currency service returned unexpected response body: " + ex.getResponseBodyAsString());
             throw ex;
