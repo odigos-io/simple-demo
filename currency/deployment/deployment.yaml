@@ -20,7 +20,7 @@ spec:
           ports:
             - containerPort: 9000
         - name: nginx
-          image: nginx:latest
+          image: nginx:1.27.5
           ports:
             - containerPort: 8080
           volumeMounts:
