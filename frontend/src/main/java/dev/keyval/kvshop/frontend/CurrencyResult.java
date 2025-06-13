@@ -3,9 +3,6 @@ package dev.keyval.kvshop.frontend;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CurrencyResult {
-    @JsonProperty("currencyPair")
-    private String currencyPair;
-
     @JsonProperty("conversionRate")
     private int conversionRate;
 
@@ -16,15 +13,10 @@ public class CurrencyResult {
         // Default constructor for deserialization
     }
 
-    public CurrencyResult(String currencyPair, int conversionRate, String convertedString) {
+    public CurrencyResult(int conversionRate, String convertedString) {
         // Constructor for initialization
-        this.currencyPair = currencyPair;
         this.conversionRate = conversionRate;
         this.convertedString = convertedString;
-    }
-
-    public void setCurrencyPair(String currencyPair) {
-        this.currencyPair = currencyPair;
     }
 
     public void setConversionRate(int conversionRate) {
@@ -33,10 +25,6 @@ public class CurrencyResult {
 
     public void setConvertedString(String convertedString) {
         this.convertedString = convertedString;
-    }
-
-    public String getCurrencyPair() {
-        return currencyPair;
     }
 
     public int getConversionRate() {

@@ -59,6 +59,7 @@ $app->get('/rate/{currencyPair}', function (
     $locationInfo2 = json_decode((string) $res2->getBody(), true);
 
     $conversionRate = (new Dice($logger))->rollOnce();
+    $logger->info("Got conversion rate for pair:", ['conversionRate' => $conversionRate]);
 
     $convertedString = sprintf(
       "1 %s %s = %s %s %s",
@@ -69,31 +70,26 @@ $app->get('/rate/{currencyPair}', function (
       $locationInfo2['flag']
     );
 
-    $logger->info("Got conversion rate for pair:", [
-      'currencyPair' => $currencyPair,
-      'conversionRate' => $conversionRate,
-      'convertedString' => $convertedString
-    ]);
-
-    $response->withStatus(200)->withHeader('Content-Type', 'application/json')->getBody()->write(
-      json_encode([
+    $response = $response->withHeader('Content-Type', 'application/json');
+    $response->withStatus(200)->getBody()->write(json_encode(
+      [
         'conversionRate' => $conversionRate,
         'convertedString' => $convertedString
-      ])
-    );
+      ]
+    ));
 
     return $response;
   } catch (RequestException $e) {
-    $logger->error("GeoService call failed", [
-      'message' => $e->getMessage(),
-      'currencyPair' => $currencyPair
-    ]);
+    $logger->error("Geolocation call failed", ['message' => $e->getMessage()]);
 
-    $response->withStatus(502)->withHeader('Content-Type', 'application/json')->getBody()->write(
+    $response = $response->withHeader('Content-Type', 'application/json');
+    $response->withStatus(502)->getBody()->write(
       json_encode([
-        'error' => 'Failed to fetch location data'
+        'error' => 'Failed to fetch location data',
+        'message' => $e->getMessage()
       ])
     );
+
     return $response;
   }
 });
