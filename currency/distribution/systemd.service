@@ -14,6 +14,7 @@ Type=simple
 User=odigos
 Group=odigos
 Environment="PORT=8085"
+Environment="GEOLOCATION_SERVICE_HOST=localhost:8086"
 
 [Install]
 WantedBy=multi-user.target

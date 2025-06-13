@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: geolocation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geolocation
+  template:
+    metadata:
+      labels:
+        app: geolocation
+    spec:
+      containers:
+        - name: geolocation
+          image: dev/geolocation:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: RAILS_ENV
+              value: 'production'
+            - name: RAILS_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rails-master-key
+                  key: master.key
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rails-master-key
+type: Opaque
+stringData:
+  master.key: 'b28f0011734d7ca9d6092292bd2b9199'

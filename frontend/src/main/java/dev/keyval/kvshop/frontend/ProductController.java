@@ -27,20 +27,23 @@ public class ProductController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("/rate/{currencyPair}")
-    public int getConversionRate(@PathVariable String currencyPair) {
-        int conversionRate = currencyService.getConversionRate(currencyPair);
+    public String getConversionRate(@PathVariable String currencyPair) {
+        CurrencyResult currencyInfo = this.currencyService.getCurrencyInfo(currencyPair);
+        String currencyString = currencyInfo.getConvertedString();
 
-        return conversionRate;
+        System.out.println("Currency conversion rate: " + currencyString);
+
+        return currencyString;
     }
 
     @CrossOrigin(origins = "*")
     @GetMapping("/products")
     public List<Product> getProducts() {
-        List<Product> products = inventoryService.getInventory();
+        List<Product> products = this.inventoryService.getInventory();
 
         // Add price to every product
         for (Product product : products) {
-            product.setPrice(pricingService.getPrice(product.getId()));
+            product.setPrice(this.pricingService.getPrice(product.getId()));
         }
 
         // Get coupons
@@ -53,8 +56,11 @@ public class ProductController {
     @PostMapping("/buy")
     public void buyProduct(@RequestParam(name = "id") int id) {
         // Validate price via pricing service
-        double price = pricingService.getPrice(id);
-        int conversionRate = currencyService.getConversionRate("usd-eur");
+        double price = this.pricingService.getPrice(id);
+
+        String currencyPair = "usd-eur";
+        CurrencyResult currencyInfo = this.currencyService.getCurrencyInfo(currencyPair);
+        int conversionRate = currencyInfo.getConversionRate();
 
         String usdPrice = ("$" + price + " USD");
         String eurPrice = ("ִ€" + (price * conversionRate) + " EUR");

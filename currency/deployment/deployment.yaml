@@ -17,6 +17,9 @@ spec:
         - name: currency
           image: dev/currency:dev
           imagePullPolicy: IfNotPresent
+          env:
+            - name: GEOLOCATION_SERVICE_HOST
+              value: geolocation:8080
           ports:
             - containerPort: 9000
         - name: nginx
