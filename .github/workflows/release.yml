@@ -15,11 +15,12 @@ jobs:
       matrix:
         include:
           - service: coupon
+          - service: currency
           - service: frontend
+          - service: geolocation
           - service: inventory
           - service: membership
           - service: pricing
-          - service: currency
     runs-on: ubuntu-latest
     steps:
       - name: Store new version in env
@@ -110,16 +111,19 @@ jobs:
     strategy:
       matrix:
         include:
-          - service: frontend
-            arch: amd64
-            pkg_arch: all
-          - service: inventory
-            arch: amd64
-            pkg_arch: all
           - service: coupon
             arch: amd64
             pkg_arch: all
           - service: currency
+            arch: amd64
+            pkg_arch: all
+          - service: frontend
+            arch: amd64
+            pkg_arch: all
+          - service: geolocation
+            arch: amd64
+            pkg_arch: all
+          - service: inventory
             arch: amd64
             pkg_arch: all
           - service: pricing
