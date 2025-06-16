@@ -14,6 +14,7 @@ services:
       PRICING_SERVICE_HOST: pricing:8083
       COUPON_SERVICE_HOST: coupon:8084
       CURRENCY_SERVICE_HOST: nginx:8085
+      GEOLOCATION_SERVICE_HOST: geolocation:8086
   membership:
     build:
       context: ./membership

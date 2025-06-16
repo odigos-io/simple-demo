@@ -19,7 +19,7 @@ public class CurrencyService {
         String url = "http://" + currencyServiceHost + "/rate/" + currencyPair;
         CurrencyResult res = new RestTemplate().getForObject(url, CurrencyResult.class);
 
-        log.info("Successfully fetched from Currency service, got result: {}", res.getConvertedString());
+        log.info("Successfully fetched from Currency service, got result: {}", res.toString());
 
         return res;
     }

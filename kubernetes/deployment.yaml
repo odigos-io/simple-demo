@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: coupon
-          image: registry.odigos.io/odigos-demo-coupon:v0.1.21
+          image: registry.odigos.io/odigos-demo-coupon:v0.1.22
           imagePullPolicy: Always
           env:
             - name: MEMBERSHIP_SERVICE_HOST
@@ -59,7 +59,7 @@ spec:
     spec:
       containers:
         - name: currency
-          image: registry.odigos.io/odigos-demo-currency:v0.1.21
+          image: registry.odigos.io/odigos-demo-currency:v0.1.22
           imagePullPolicy: Always
           env:
             - name: GEOLOCATION_SERVICE_HOST
@@ -128,7 +128,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: registry.odigos.io/odigos-demo-frontend:v0.1.21
+          image: registry.odigos.io/odigos-demo-frontend:v0.1.22
           imagePullPolicy: Always
           env:
             - name: INVENTORY_SERVICE_HOST
@@ -139,6 +139,8 @@ spec:
               value: coupon:8080
             - name: CURRENCY_SERVICE_HOST
               value: currency:8080
+            - name: GEOLOCATION_SERVICE_HOST
+              value: geolocation:8080
           ports:
             - containerPort: 8080
 ---
@@ -174,7 +176,7 @@ spec:
     spec:
       containers:
         - name: geolocation
-          image: registry.odigos.io/odigos-demo-geolocation:v0.1.21
+          image: registry.odigos.io/odigos-demo-geolocation:v0.1.22
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
@@ -229,7 +231,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: registry.odigos.io/odigos-demo-inventory:v0.1.21
+          image: registry.odigos.io/odigos-demo-inventory:v0.1.22
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -267,7 +269,7 @@ spec:
     spec:
       containers:
         - name: membership
-          image: registry.odigos.io/odigos-demo-membership:v0.1.21
+          image: registry.odigos.io/odigos-demo-membership:v0.1.22
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -305,7 +307,7 @@ spec:
     spec:
       containers:
         - name: pricing
-          image: registry.odigos.io/odigos-demo-pricing:v0.1.21
+          image: registry.odigos.io/odigos-demo-pricing:v0.1.22
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

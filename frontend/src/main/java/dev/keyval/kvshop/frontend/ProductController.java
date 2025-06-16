@@ -9,6 +9,7 @@ import java.util.List;
 public class ProductController {
 
     private final CurrencyService currencyService;
+    private final GeoService geoService;
     private final InventoryService inventoryService;
     private final PricingService pricingService;
     private final CouponService couponService;
@@ -16,10 +17,12 @@ public class ProductController {
     @Autowired
     public ProductController(
             CurrencyService currencyService,
+            GeoService geoService,
             InventoryService inventoryService,
             PricingService pricingService,
             CouponService couponService) {
         this.currencyService = currencyService;
+        this.geoService = geoService;
         this.inventoryService = inventoryService;
         this.pricingService = pricingService;
         this.couponService = couponService;
@@ -55,6 +58,11 @@ public class ProductController {
     @CrossOrigin(origins = "*")
     @PostMapping("/buy")
     public void buyProduct(@RequestParam(name = "id") int id) {
+        // TODO: remove GEO from Java once context propagation is fixed for PHP
+        GeoResult locationInfo = this.geoService.getLocationInfo("israel");
+        String origin = locationInfo.getOrigin();
+        System.out.println("TEMP - got geo result : " + origin);
+
         // Validate price via pricing service
         double price = this.pricingService.getPrice(id);
 

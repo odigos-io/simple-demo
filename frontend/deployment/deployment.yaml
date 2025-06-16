@@ -25,5 +25,7 @@ spec:
               value: coupon:8080
             - name: CURRENCY_SERVICE_HOST
               value: currency:8080
+            - name: GEOLOCATION_SERVICE_HOST
+              value: geolocation:8080
           ports:
             - containerPort: 8080

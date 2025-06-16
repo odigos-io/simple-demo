@@ -30,7 +30,7 @@ dev-deploy:
 # For production (requires Google Cloud permissions)
 ##################################################
 
-VERSION := v0.1.21
+VERSION := v0.1.22
 REGISTRY := us-central1-docker.pkg.dev/odigos-cloud/components
 
 .PHONY: prod-deploy
