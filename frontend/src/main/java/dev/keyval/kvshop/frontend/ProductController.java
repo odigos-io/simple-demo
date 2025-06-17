@@ -59,7 +59,7 @@ public class ProductController {
     @PostMapping("/buy")
     public void buyProduct(@RequestParam(name = "id") int id) {
         // TODO: remove GEO from Java once context propagation is fixed for PHP
-        GeoResult locationInfo = this.geoService.getLocationInfo("israel");
+        GeoResult locationInfo = this.geoService.getLocationInfo("gbp");
         String origin = locationInfo.getOrigin();
         System.out.println("TEMP - got geo result : " + origin);
 

@@ -1,21 +1,10 @@
 
 class ApplicationController < ActionController::API
   COUNTRIES = [
-    {
-      ticker: "USD",
-      origin: "United States of America",
-      flag: "🇺🇸"
-    },
-    {
-      ticker: "EUR",
-      origin: "European Union",
-      flag: "🇪🇺"
-    },
-    {
-      ticker: "ILS",
-      origin: "Israel",
-      flag: "🇮🇱"
-    }
+    { ticker: "ILS", origin: "Israel", flag: "🇮🇱" },
+    { ticker: "EUR", origin: "European Union", flag: "🇪🇺" },
+    { ticker: "GBP", origin: "United Kingdom", flag: "🇬🇧" },
+    { ticker: "USD", origin: "United States of America", flag: "🇺🇸" },
   ]
 
   def index
