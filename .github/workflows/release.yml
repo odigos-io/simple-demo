@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   id-token: 'write'
+  packages: write
 
 jobs:
   publish-docker-images:
@@ -65,7 +66,7 @@ jobs:
           push: true
           tags: |
             us-central1-docker.pkg.dev/odigos-cloud/components/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
-            ghcr.io/${{ github.repository_owner }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
+            ghcr.io/${{ github.actor }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
           platforms: linux/amd64,linux/arm64
           file: ${{ matrix.service }}/Dockerfile
           context: ${{ matrix.service }}
