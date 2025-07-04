@@ -57,8 +57,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: keyval-release-bot
+          password: ${{ secrets.RELEASE_BOT_TOKEN }}
 
       - name: Build and Push Docker Image for ${{ matrix.service }}
         uses: docker/build-push-action@v5
@@ -66,7 +66,7 @@ jobs:
           push: true
           tags: |
             us-central1-docker.pkg.dev/odigos-cloud/components/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
-            ghcr.io/${{ github.actor }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
+            ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
           platforms: linux/amd64,linux/arm64
           file: ${{ matrix.service }}/Dockerfile
           context: ${{ matrix.service }}
