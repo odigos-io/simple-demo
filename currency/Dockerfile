@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.2.28-fpm
 WORKDIR /app
 COPY . /app
 
