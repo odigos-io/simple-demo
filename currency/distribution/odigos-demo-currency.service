@@ -1,0 +1,12 @@
+[Unit]
+Description=Odigos Demo Currency – Nginx vhost
+After=network.target php8.2-fpm.service nginx.service
+Requires=php8.2-fpm.service nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true          # real work handled by nginx/php‑fpm units
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
