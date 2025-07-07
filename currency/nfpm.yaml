@@ -1,7 +1,7 @@
 name: odigos-demo-currency
-arch: amd64
+arch: all
 platform: linux
-version: 0.0.1
+version: 1.0.0
 section: default
 priority: extra
 maintainer: Odigos
@@ -14,21 +14,14 @@ depends:
   - php-fpm
   - nginx-full       (>= 1.18)
 contents:
-  # PHP application – built artefact
   - src: ./dist/app
     dst: /opt/odigos-demo-currency
-
-  # Nginx virtual host
   - src: distribution/nginx.conf
     dst: /etc/nginx/sites-available/odigos-demo-currency.conf
     type: config
-
-  # php‑fpm pool
   - src: distribution/php-fpm.conf
     dst: /etc/php/8.2/fpm/pool.d/odigos-demo-currency.conf
     type: config
-
-  # “umbrella” systemd unit
   - src: distribution/odigos-demo-currency.service
     dst: /lib/systemd/system/odigos-demo-currency.service
     type: config
