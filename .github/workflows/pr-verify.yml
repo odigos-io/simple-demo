@@ -134,6 +134,7 @@ jobs:
           distribution: goreleaser
           version: latest
           workdir: membership
+          args: release --snapshot --skip=publish --rm-dist
 
       - name: List dist
         working-directory: membership
