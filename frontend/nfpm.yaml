@@ -22,12 +22,18 @@ overrides:
   rpm:
     depends:
     - java-17-openjdk-headless
-    - odigos-demo-inventory
-    - odigos-demo-pricing
     - odigos-demo-coupon
+    - odigos-demo-currency
+    - odigos-demo-geolocation
+    - odigos-demo-inventory
+    - odigos-demo-membership
+    - odigos-demo-pricing
   deb:
     depends:
     - openjdk-17-jre-headless
-    - odigos-demo-inventory
-    - odigos-demo-pricing
     - odigos-demo-coupon
+    - odigos-demo-currency
+    - odigos-demo-geolocation
+    - odigos-demo-inventory
+    - odigos-demo-membership
+    - odigos-demo-pricing

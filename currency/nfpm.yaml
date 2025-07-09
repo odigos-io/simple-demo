@@ -1,22 +1,65 @@
+# ------------------------ Common metadata ------------------------
 name: odigos-demo-currency
 arch: all
 platform: linux
 version: 1.0.0
-section: default
-priority: extra
-maintainer: Odigos
-description: |
-  Demo PHP application for testing Odigos
+section: web
+priority: optional
+maintainer: Odigos <info@odigos.io>
 vendor: Odigos
 homepage: https://odigos.io
+license: Apache-2.0
+description: |
+  Demo PHP micro‑service that returns a fake currency conversion
+  rate.  Part of the Odigos example stack.
+
+# ------------------------ Cross‑distro runtime deps --------------
 depends:
-  - php
+  - php-fpm
+  - nginx-full (>= 1.18)
+
+# ------------------------ Payload ------------------------
 contents:
-  - src: distribution/systemd.service
-    dst: /lib/systemd/system/odigos-demo-currency.service
   - src: ./dist/app
     dst: /opt/odigos-demo-currency
+  - src: distribution/nginx.conf
+    dst: /etc/nginx/sites-available/odigos-demo-currency.conf
+    type: config
+  - src: distribution/php-fpm.conf
+    dst: /etc/odigos-demo-currency/php-fpm.conf
+    type: config
+
 scripts:
-  preinstall: ./distribution/preinstall.sh
-  postinstall: ./distribution/postinstall.sh
-  preremove: ./distribution/preremove.sh
+  preinstall:  distribution/preinstall.sh
+  postinstall: distribution/postinstall.sh
+  preremove:   distribution/preremove.sh
+
+# ------------------------ Distro‑specific overrides --------------
+overrides:
+  rpm:
+    # “all” is **not** valid in RPM – the neutral value is “noarch”
+    # rpm package names differ
+    depends:
+      - php-fpm
+      - nginx
+    contents:
+      - src: ./dist/app
+        dst: /opt/odigos-demo-currency
+      # Pool file path
+      - src: distribution/php-fpm.conf
+        dst: /etc/php-fpm.d/odigos-demo-currency.conf
+        type: config
+      # nginx upstream socket is different on RHEL ≥ 9
+      - src: distribution/nginx.conf
+        dst: /etc/nginx/conf.d/odigos-demo-currency.conf
+        type: config
+  deb:
+    depends:
+      - php-fpm (>= 8.2)
+      - nginx-full (>= 1.18)
+
+rpm:
+  arch: noarch
+
+deb:
+  arch: all

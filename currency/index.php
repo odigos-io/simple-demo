@@ -1,14 +1,12 @@
 <?php
-
-declare(strict_types=1); // Enables strict types for the entire file
-declare(ticks=1); // Enables signal handling for every tickable statement
+declare(strict_types=1);
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use Monolog\Logger;
-use Monolog\Level;
 use Monolog\Handler\StreamHandler;
+use Monolog\Level;
+use Monolog\Logger;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
@@ -29,6 +27,11 @@ $app->addErrorMiddleware(true, true, true)->setDefaultErrorHandler(function (
   $response->withHeader('Content-Type', 'application/json')->withStatus(500);
   $response->getBody()->write(json_encode(['error' => $exception->getMessage()]));
   return $response;
+});
+
+$app->get('/rate/ping', function (Request $request, Response $response) {
+    $response->getBody()->write('pong');
+    return $response;
 });
 
 $app->get('/rate/{currencyPair}', function (
