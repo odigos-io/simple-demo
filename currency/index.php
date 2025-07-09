@@ -1,14 +1,12 @@
 <?php
-
-declare(strict_types=1); // Enables strict types for the entire file
-declare(ticks=1); // Enables signal handling for every tickable statement
+declare(strict_types=1);
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use Monolog\Logger;
-use Monolog\Level;
 use Monolog\Handler\StreamHandler;
+use Monolog\Level;
+use Monolog\Logger;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
@@ -17,6 +15,14 @@ require('dice.php');
 
 $logger = new Logger('currency-server');
 $logger->pushHandler(new StreamHandler('php://stdout', Level::Info));
+
+if (PHP_SAPI === 'cli' && function_exists('pcntl_signal')) {
+    $shutdown = false;
+    pcntl_signal(SIGTERM, function () use (&$shutdown, $logger) {
+        $logger->info('Received SIGTERM, shutting down gracefully…');
+        $shutdown = true;
+    });
+}
 
 $app = AppFactory::create();
 
@@ -29,6 +35,11 @@ $app->addErrorMiddleware(true, true, true)->setDefaultErrorHandler(function (
   $response->withHeader('Content-Type', 'application/json')->withStatus(500);
   $response->getBody()->write(json_encode(['error' => $exception->getMessage()]));
   return $response;
+});
+
+$app->get('/rate/ping', function (Request $request, Response $response) {
+    $response->getBody()->write('pong');
+    return $response;
 });
 
 $app->get('/rate/{currencyPair}', function (
@@ -48,7 +59,7 @@ $app->get('/rate/{currencyPair}', function (
       ->getBody()->write(json_encode(['error' => 'Invalid currency pair']));
   }
 
-  $geoServiceHost = getenv('GEOLOCATION_SERVICE_HOST');
+  $geoServiceHost = getenv('GEOLOCATION_SERVICE_HOST') ?: '127.0.0.1:8080';
   $client = new Client(['base_uri' => "http://$geoServiceHost"]);
 
   try {
@@ -92,13 +103,6 @@ $app->get('/rate/{currencyPair}', function (
 
     return $response;
   }
-});
-
-// Register a signal handler for SIGTERM
-$shutdown = false;
-pcntl_signal(SIGTERM, function ($signo) use (&$shutdown, $logger) {
-  $logger->info("Received SIGTERM, shutting down gracefully...");
-  $shutdown = true;
 });
 
 $app->run();
