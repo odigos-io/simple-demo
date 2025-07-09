@@ -75,14 +75,7 @@ jobs:
     runs-on:
       labels: ubuntu-latest
     steps:
-      - name: Store new version in env
-        run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
-
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ env.TAG }}
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -99,8 +92,6 @@ jobs:
 
       - name: Build
         working-directory: ${{ matrix.service }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
           docker create --name tc ${{ matrix.service }}
@@ -125,26 +116,13 @@ jobs:
     runs-on:
       labels: ubuntu-latest
     steps:
-      - name: Store new version in env
-        run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
-
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ env.TAG }}
 
       - name: Set env
         id: vars
         run: |
           SHORT_COMMIT=$(git rev-parse --short HEAD)
           echo "short_commit=${SHORT_COMMIT}" >> $GITHUB_ENV
-
-      - name: Install GemFury CLI
-        run: |
-          sudo bash -c "echo 'deb [trusted=yes] https://apt.fury.io/cli/ * *' > /etc/apt/sources.list.d/fury-cli.list"
-          sudo apt-get update
-          sudo apt-get install -y fury-cli
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
