@@ -16,14 +16,6 @@ require('dice.php');
 $logger = new Logger('currency-server');
 $logger->pushHandler(new StreamHandler('php://stdout', Level::Info));
 
-if (PHP_SAPI === 'cli' && function_exists('pcntl_signal')) {
-    $shutdown = false;
-    pcntl_signal(SIGTERM, function () use (&$shutdown, $logger) {
-        $logger->info('Received SIGTERM, shutting down gracefully…');
-        $shutdown = true;
-    });
-}
-
 $app = AppFactory::create();
 
 $app->addErrorMiddleware(true, true, true)->setDefaultErrorHandler(function (
@@ -59,7 +51,7 @@ $app->get('/rate/{currencyPair}', function (
       ->getBody()->write(json_encode(['error' => 'Invalid currency pair']));
   }
 
-  $geoServiceHost = getenv('GEOLOCATION_SERVICE_HOST') ?: '127.0.0.1:8080';
+  $geoServiceHost = getenv('GEOLOCATION_SERVICE_HOST');
   $client = new Client(['base_uri' => "http://$geoServiceHost"]);
 
   try {
@@ -103,6 +95,13 @@ $app->get('/rate/{currencyPair}', function (
 
     return $response;
   }
+});
+
+// Register a signal handler for SIGTERM
+$shutdown = false;
+pcntl_signal(SIGTERM, function ($signo) use (&$shutdown, $logger) {
+  $logger->info("Received SIGTERM, shutting down gracefully...");
+  $shutdown = true;
 });
 
 $app->run();
