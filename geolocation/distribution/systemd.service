@@ -7,7 +7,6 @@ Type=simple
 User=odigos
 Group=odigos
 WorkingDirectory=/opt/odigos-demo-geolocation
-EnvironmentFile=/opt/odigos-demo-geolocation/config/master.key.env
 Environment="BUNDLE_GEMFILE=/opt/odigos-demo-geolocation/Gemfile"
 Environment="BUNDLE_PATH=/opt/odigos-demo-geolocation/vendor/bundle"
 Environment="LD_LIBRARY_PATH=/opt/odigos-demo-geolocation/embedded-ruby/lib"
