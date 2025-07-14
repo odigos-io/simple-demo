@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -e
 
 IMAGE_TAG="geolocation:release"
 PLATFORM="linux/amd64"

@@ -104,14 +104,6 @@ jobs:
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
 
-      - name: List dist
-        working-directory: ${{ matrix.service }}
-        run: |
-          echo "Local dir"
-          ls -la .
-
-          echo "dist/"
-          ls -la dist/
 
   membership-linux-builds:
     runs-on:
@@ -136,12 +128,3 @@ jobs:
           version: latest
           workdir: membership
           args: release --snapshot --skip=publish --rm-dist
-
-      - name: List dist
-        working-directory: membership
-        run: |
-          echo "Local dir"
-          ls -la .
-
-          echo "dist/"
-          ls -la dist/
