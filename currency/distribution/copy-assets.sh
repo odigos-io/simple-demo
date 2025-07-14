@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -e
 
 mkdir -p ./dist/app
 # Copy source files + vendor tree that were built in the container

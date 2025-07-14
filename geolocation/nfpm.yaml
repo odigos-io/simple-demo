@@ -9,13 +9,17 @@ description: |
   Demo Ruby on Rails application for testing Odigos
 vendor: Odigos
 homepage: https://odigos.io
-depends:
-  - ruby
 contents:
+  - src: dist/odigos-demo-geolocation
+    dst: /opt/odigos-demo-geolocation
+
+  - src: config/master.key
+    dst: /opt/odigos-demo-geolocation/config/master.key
+
   - src: distribution/systemd.service
     dst: /lib/systemd/system/odigos-demo-geolocation.service
-  - src: ./dist/app
-    dst: /opt/odigos-demo-geolocation
+    file_info:
+      mode: 0644
 scripts:
   preinstall: ./distribution/preinstall.sh
   postinstall: ./distribution/postinstall.sh
