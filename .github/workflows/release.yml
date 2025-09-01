@@ -3,11 +3,11 @@ name: Release Demo Services
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: read
-  id-token: 'write'
+  id-token: "write"
   packages: write
 
 jobs:
@@ -15,6 +15,7 @@ jobs:
     strategy:
       matrix:
         include:
+          - service: load-generator
           - service: coupon
           - service: currency
           - service: frontend
@@ -41,7 +42,7 @@ jobs:
         name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          token_format: 'access_token'
+          token_format: "access_token"
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           access_token_lifetime: 1800s
@@ -101,7 +102,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: "1.22"
 
       - name: Release Membership Linux Package
         uses: goreleaser/goreleaser-action@v5
@@ -114,6 +115,7 @@ jobs:
           FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
           FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   ##############################
   ####  Linux pkg via NPFM  ####
   ##############################
@@ -168,7 +170,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: "1.22"
 
       - name: Install nfpm
         run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest

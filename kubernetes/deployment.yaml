@@ -1,4 +1,36 @@
 ##################################################
+# Load Generator (CronJob)
+##################################################
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: load-generator
+  labels:
+    app: load-generator
+spec:
+  schedule: "*/1 * * * *" # runs every 1 minute
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: load-generator
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: load-generator
+              image: registry.odigos.io/odigos-demo-load-generator:v0.1.30
+              imagePullPolicy: Always
+              env:
+                - name: FRONTEND_SERVICE_HOST
+                  value: "frontend:8080"
+                - name: LOAD_GENERATOR_MAX_ITERATIONS
+                  value: "10"
+                - name: LOAD_GENERATOR_DELAY_SECONDS
+                  value: "3"
+
+---
+##################################################
 # Coupon (JavaScript)
 ##################################################
 apiVersion: apps/v1
@@ -18,7 +50,7 @@ spec:
     spec:
       containers:
         - name: coupon
-          image: registry.odigos.io/odigos-demo-coupon:v0.1.23
+          image: registry.odigos.io/odigos-demo-coupon:v0.1.30
           imagePullPolicy: Always
           env:
             - name: MEMBERSHIP_SERVICE_HOST
@@ -59,7 +91,7 @@ spec:
     spec:
       containers:
         - name: currency
-          image: registry.odigos.io/odigos-demo-currency:v0.1.23
+          image: registry.odigos.io/odigos-demo-currency:v0.1.30
           imagePullPolicy: Always
           env:
             - name: GEOLOCATION_SERVICE_HOST
@@ -128,7 +160,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: registry.odigos.io/odigos-demo-frontend:v0.1.23
+          image: registry.odigos.io/odigos-demo-frontend:v0.1.30
           imagePullPolicy: Always
           env:
             - name: INVENTORY_SERVICE_HOST
@@ -176,13 +208,13 @@ spec:
     spec:
       containers:
         - name: geolocation
-          image: registry.odigos.io/odigos-demo-geolocation:v0.1.23
+          image: registry.odigos.io/odigos-demo-geolocation:v0.1.30
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
           env:
             - name: RAILS_ENV
-              value: 'production'
+              value: "production"
             - name: RAILS_MASTER_KEY
               valueFrom:
                 secretKeyRef:
@@ -195,7 +227,7 @@ metadata:
   name: rails-master-key
 type: Opaque
 stringData:
-  master.key: 'df0300c20246e24d331787f6540a72fa'
+  master.key: "df0300c20246e24d331787f6540a72fa"
 ---
 apiVersion: v1
 kind: Service
@@ -231,7 +263,7 @@ spec:
     spec:
       containers:
         - name: inventory
-          image: registry.odigos.io/odigos-demo-inventory:v0.1.23
+          image: registry.odigos.io/odigos-demo-inventory:v0.1.30
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -269,7 +301,7 @@ spec:
     spec:
       containers:
         - name: membership
-          image: registry.odigos.io/odigos-demo-membership:v0.1.23
+          image: registry.odigos.io/odigos-demo-membership:v0.1.30
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -307,7 +339,7 @@ spec:
     spec:
       containers:
         - name: pricing
-          image: registry.odigos.io/odigos-demo-pricing:v0.1.23
+          image: registry.odigos.io/odigos-demo-pricing:v0.1.30
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

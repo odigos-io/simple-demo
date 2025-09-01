@@ -1,5 +1,5 @@
 PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-APPS = coupon currency frontend geolocation inventory membership pricing
+APPS = load-generator coupon currency frontend geolocation inventory membership pricing
 
 ##################################################
 # For development
@@ -30,7 +30,7 @@ dev-deploy:
 # For production (requires Google Cloud permissions)
 ##################################################
 
-VERSION := v0.1.23
+VERSION := v0.1.30
 REGISTRY := us-central1-docker.pkg.dev/odigos-cloud/components
 
 .PHONY: prod-deploy
