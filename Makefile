@@ -1,5 +1,5 @@
 PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-APPS = coupon currency frontend geolocation inventory membership pricing
+APPS = load-generator coupon currency frontend geolocation inventory membership pricing
 
 ##################################################
 # For development

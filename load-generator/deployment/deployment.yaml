@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: load-generator
+  labels:
+    app: load-generator
+spec:
+  schedule: "*/1 * * * *" # runs every 1 minute
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: load-generator
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: load-generator
+              image: dev/load-generator:dev
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: FRONTEND_SERVICE_HOST
+                  value: "frontend:8080"
+                - name: LOAD_GENERATOR_MAX_ITERATIONS
+                  value: "10"
+                - name: LOAD_GENERATOR_DELAY_SECONDS
+                  value: "3"

@@ -10,15 +10,16 @@ This application is used to demonstrate the capabilities of Odigos.
 
 Simple Demo contains the following services:
 
-| Service     | Language        | Version              |
-| ----------- | --------------- | -------------------- |
-| Coupon      | JavaScript      | NodeJS 18.3.0        |
-| Currency    | PHP             | 8.2.28 (FPM)         |
-| Frontend    | Java            | 17 (Eclipse Temurin) |
-| Geolocation | Ruby (on Rails) | 3.4.4                |
-| Inventory   | Python          | 3.11                 |
-| Membership  | Go              | 1.21                 |
-| Pricing     | .NET            | 8.0                  |
+| Service        | Language        | Version              |
+| -------------- | --------------- | -------------------- |
+| Load Generator | Rust            | 1.89.0               |
+| Coupon         | JavaScript      | NodeJS 18.3.0        |
+| Currency       | PHP             | 8.2.28 (FPM)         |
+| Frontend       | Java            | 17 (Eclipse Temurin) |
+| Geolocation    | Ruby (on Rails) | 3.4.4                |
+| Inventory      | Python          | 3.11                 |
+| Membership     | Go              | 1.21                 |
+| Pricing        | .NET            | 8.0                  |
 
 ## Running locally
 
