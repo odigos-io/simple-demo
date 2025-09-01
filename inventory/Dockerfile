@@ -20,12 +20,13 @@ COPY poetry.lock pyproject.toml README.md /app/
 
 COPY inventory/ /app/inventory
 
-# Install Poetry
-RUN pip install poetry
+# Install Poetry with specific version to avoid compatibility issues
+RUN pip install poetry==1.7.1
 
-# Install project dependencies
+# Configure Poetry and install dependencies with increased timeout
 RUN poetry config virtualenvs.create false \
-    && poetry install
+    && poetry config installer.max-workers 1 \
+    && poetry install --no-interaction --no-ansi
 
 # Stage 2: Runtime Stage
 FROM python:3.11-slim
@@ -33,6 +34,12 @@ FROM python:3.11-slim
 # Set environment variables for Python and prevent writing .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+
+# Install runtime dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create and set the working directory
 WORKDIR /app
@@ -44,7 +51,8 @@ COPY --from=builder /app /app
 # Expose the port that the application will run on
 EXPOSE 8080
 
-ENV PYTHONPATH=/bar
+# Set correct PYTHONPATH
+ENV PYTHONPATH=/app
 
 # Command to run the application
 CMD ["python", "inventory/main.py"]
