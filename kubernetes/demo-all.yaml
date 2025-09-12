@@ -1,9 +1,6 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: tracing
 ---
 apiVersion: v1
@@ -21,17 +18,11 @@ data:
     }
 kind: ConfigMap
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: currency-nginx-config
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: rails-master-key
 stringData:
   master.key: df0300c20246e24d331787f6540a72fa
@@ -42,8 +33,6 @@ kind: Service
 metadata:
   labels:
     app: jaeger
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: jaeger
   namespace: tracing
 spec:
@@ -60,9 +49,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: coupon
 spec:
   ports:
@@ -75,9 +61,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: currency
 spec:
   ports:
@@ -90,9 +73,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: frontend
 spec:
   ports:
@@ -105,9 +85,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: geolocation
 spec:
   ports:
@@ -121,9 +98,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: inventory
 spec:
   ports:
@@ -136,9 +110,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: membership
 spec:
   ports:
@@ -151,9 +122,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: pricing
 spec:
   ports:
@@ -168,8 +136,6 @@ kind: Deployment
 metadata:
   labels:
     app: jaeger
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: jaeger
   namespace: tracing
 spec:
@@ -191,8 +157,6 @@ kind: Deployment
 metadata:
   labels:
     app: coupon
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: coupon
 spec:
   selector:
@@ -218,8 +182,6 @@ kind: Deployment
 metadata:
   labels:
     app: currency
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: currency
 spec:
   selector:
@@ -256,8 +218,6 @@ kind: Deployment
 metadata:
   labels:
     app: frontend
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: frontend
 spec:
   selector:
@@ -289,9 +249,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: geolocation
 spec:
   replicas: 1
@@ -323,8 +280,6 @@ kind: Deployment
 metadata:
   labels:
     app: inventory
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: inventory
 spec:
   selector:
@@ -347,8 +302,6 @@ kind: Deployment
 metadata:
   labels:
     app: membership
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: membership
 spec:
   selector:
@@ -371,8 +324,6 @@ kind: Deployment
 metadata:
   labels:
     app: pricing
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: pricing
 spec:
   selector:
@@ -395,8 +346,6 @@ kind: CronJob
 metadata:
   labels:
     app: load-generator
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: load-generator
 spec:
   jobTemplate:
@@ -423,9 +372,6 @@ spec:
 apiVersion: odigos.io/v1alpha1
 kind: Destination
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: demo-jaeger
   namespace: odigos-system
 spec:
@@ -442,9 +388,6 @@ spec:
 apiVersion: odigos.io/v1alpha1
 kind: Source
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: coupon
   namespace: default
 spec:
@@ -456,9 +399,6 @@ spec:
 apiVersion: odigos.io/v1alpha1
 kind: Source
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: currency
   namespace: default
 spec:
@@ -470,9 +410,6 @@ spec:
 apiVersion: odigos.io/v1alpha1
 kind: Source
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: frontend
   namespace: default
 spec:
@@ -484,9 +421,6 @@ spec:
 apiVersion: odigos.io/v1alpha1
 kind: Source
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: geolocation
   namespace: default
 spec:
@@ -498,9 +432,6 @@ spec:
 apiVersion: odigos.io/v1alpha1
 kind: Source
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: inventory
   namespace: default
 spec:
@@ -512,9 +443,6 @@ spec:
 apiVersion: odigos.io/v1alpha1
 kind: Source
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: membership
   namespace: default
 spec:
@@ -526,9 +454,6 @@ spec:
 apiVersion: odigos.io/v1alpha1
 kind: Source
 metadata:
-  labels:
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/part-of: simple-demo
   name: pricing
   namespace: default
 spec:
