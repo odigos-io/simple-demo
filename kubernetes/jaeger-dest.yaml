@@ -1,0 +1,15 @@
+apiVersion: odigos.io/v1alpha1
+kind: Destination
+metadata:
+  name: demo-jaeger
+  namespace: odigos-system
+spec:
+  data:
+    JAEGER_URL: jaeger.tracing:4317
+  destinationName: Jaeger
+  signals:
+  - TRACES
+  sourceSelector:
+    dataStreams:
+    - default
+  type: jaeger
