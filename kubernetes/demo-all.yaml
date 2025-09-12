@@ -1,0 +1,538 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: tracing
+---
+apiVersion: v1
+data:
+  nginx.conf: |
+    server {
+        listen 8080;
+        server_name localhost;
+
+        location / {
+            include fastcgi_params;
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_param SCRIPT_FILENAME /app/index.php;
+        }
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: currency-nginx-config
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: rails-master-key
+stringData:
+  master.key: df0300c20246e24d331787f6540a72fa
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jaeger
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: jaeger
+  namespace: tracing
+spec:
+  ports:
+  - name: otlp
+    port: 4317
+    targetPort: 4317
+  - name: ui
+    port: 16686
+    targetPort: 16686
+  selector:
+    app: jaeger
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: coupon
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: coupon
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: currency
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: currency
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: frontend
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: geolocation
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: geolocation
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: inventory
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: inventory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: membership
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: membership
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: pricing
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: pricing
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: jaeger
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: jaeger
+  namespace: tracing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+      - image: jaegertracing/jaeger:2.1.0
+        name: jaeger-v2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: coupon
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: coupon
+spec:
+  selector:
+    matchLabels:
+      app: coupon
+  template:
+    metadata:
+      labels:
+        app: coupon
+    spec:
+      containers:
+      - env:
+        - name: MEMBERSHIP_SERVICE_HOST
+          value: membership:8080
+        image: registry.odigos.io/odigos-demo-coupon:v0.1.31
+        imagePullPolicy: Always
+        name: coupon
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: currency
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: currency
+spec:
+  selector:
+    matchLabels:
+      app: currency
+  template:
+    metadata:
+      labels:
+        app: currency
+    spec:
+      containers:
+      - env:
+        - name: GEOLOCATION_SERVICE_HOST
+          value: geolocation:8080
+        image: registry.odigos.io/odigos-demo-currency:v0.1.31
+        imagePullPolicy: Always
+        name: currency
+        ports:
+        - containerPort: 9000
+      - image: nginx:1.27.5
+        name: nginx
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d
+          name: nginx-config
+      volumes:
+      - configMap:
+          name: currency-nginx-config
+        name: nginx-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: frontend
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - env:
+        - name: INVENTORY_SERVICE_HOST
+          value: inventory:8080
+        - name: PRICING_SERVICE_HOST
+          value: pricing:8080
+        - name: COUPON_SERVICE_HOST
+          value: coupon:8080
+        - name: CURRENCY_SERVICE_HOST
+          value: currency:8080
+        - name: GEOLOCATION_SERVICE_HOST
+          value: geolocation:8080
+        image: registry.odigos.io/odigos-demo-frontend:v0.1.31
+        imagePullPolicy: Always
+        name: frontend
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: geolocation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: geolocation
+  template:
+    metadata:
+      labels:
+        app: geolocation
+    spec:
+      containers:
+      - env:
+        - name: RAILS_ENV
+          value: production
+        - name: RAILS_MASTER_KEY
+          valueFrom:
+            secretKeyRef:
+              key: master.key
+              name: rails-master-key
+        image: registry.odigos.io/odigos-demo-geolocation:v0.1.31
+        imagePullPolicy: IfNotPresent
+        name: geolocation
+        ports:
+        - containerPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: inventory
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: inventory
+spec:
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+      - image: registry.odigos.io/odigos-demo-inventory:v0.1.31
+        imagePullPolicy: Always
+        name: inventory
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: membership
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: membership
+spec:
+  selector:
+    matchLabels:
+      app: membership
+  template:
+    metadata:
+      labels:
+        app: membership
+    spec:
+      containers:
+      - image: registry.odigos.io/odigos-demo-membership:v0.1.31
+        imagePullPolicy: Always
+        name: membership
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pricing
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: pricing
+spec:
+  selector:
+    matchLabels:
+      app: pricing
+  template:
+    metadata:
+      labels:
+        app: pricing
+    spec:
+      containers:
+      - image: registry.odigos.io/odigos-demo-pricing:v0.1.31
+        imagePullPolicy: Always
+        name: pricing
+        ports:
+        - containerPort: 8080
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app: load-generator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: load-generator
+spec:
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: load-generator
+        spec:
+          containers:
+          - env:
+            - name: FRONTEND_SERVICE_HOST
+              value: frontend:8080
+            - name: LOAD_GENERATOR_MAX_ITERATIONS
+              value: "10"
+            - name: LOAD_GENERATOR_DELAY_SECONDS
+              value: "3"
+            image: registry.odigos.io/odigos-demo-load-generator:v0.1.31
+            imagePullPolicy: Always
+            name: load-generator
+          restartPolicy: OnFailure
+  schedule: '*/1 * * * *'
+---
+apiVersion: odigos.io/v1alpha1
+kind: Destination
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: demo-jaeger
+  namespace: odigos-system
+spec:
+  data:
+    JAEGER_URL: jaeger.tracing:4317
+  destinationName: Jaeger
+  signals:
+  - TRACES
+  sourceSelector:
+    dataStreams:
+    - default
+  type: jaeger
+---
+apiVersion: odigos.io/v1alpha1
+kind: Source
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: coupon
+  namespace: default
+spec:
+  workload:
+    kind: Deployment
+    name: coupon
+    namespace: default
+---
+apiVersion: odigos.io/v1alpha1
+kind: Source
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: currency
+  namespace: default
+spec:
+  workload:
+    kind: Deployment
+    name: currency
+    namespace: default
+---
+apiVersion: odigos.io/v1alpha1
+kind: Source
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: frontend
+  namespace: default
+spec:
+  workload:
+    kind: Deployment
+    name: frontend
+    namespace: default
+---
+apiVersion: odigos.io/v1alpha1
+kind: Source
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: geolocation
+  namespace: default
+spec:
+  workload:
+    kind: Deployment
+    name: geolocation
+    namespace: default
+---
+apiVersion: odigos.io/v1alpha1
+kind: Source
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: inventory
+  namespace: default
+spec:
+  workload:
+    kind: Deployment
+    name: inventory
+    namespace: default
+---
+apiVersion: odigos.io/v1alpha1
+kind: Source
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: membership
+  namespace: default
+spec:
+  workload:
+    kind: Deployment
+    name: membership
+    namespace: default
+---
+apiVersion: odigos.io/v1alpha1
+kind: Source
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: simple-demo
+  name: pricing
+  namespace: default
+spec:
+  workload:
+    kind: Deployment
+    name: pricing
+    namespace: default

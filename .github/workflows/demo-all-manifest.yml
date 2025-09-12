@@ -1,0 +1,25 @@
+name: Verify Demo All Manifest are Synced
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify-demo-all-manifest:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify Demo All Manifest are Synced
+        run: |
+          make sync-demo-all-manifests
+          git diff --exit-code demo-all.yaml
+      
+      - name: Error message if demo-all.yaml is not synced
+        if: failure()
+        run: |
+          echo "Demo all manifest is not synced, run 'make sync-demo-all-manifests' in root of the repo to sync them and commit the changes"
+          exit 1
