@@ -5,11 +5,6 @@ APPS = load-generator coupon currency frontend geolocation inventory membership 
 # For development
 ##################################################
 
-.PHONY: sync-all-manifests
-sync-demo-all-manifests:
-	@echo "Syncing demo all manifests..."
-	@cd $(PROJECT_DIR)kubernetes && kubectl kustomize . > demo-all.yaml
-
 .PHONY: generate-webapp
 generate-webapp:
 	@echo "Generating webapp..."
