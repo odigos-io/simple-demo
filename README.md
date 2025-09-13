@@ -28,3 +28,21 @@ To build the project and run it locally on a Kind cluster, run the following com
 ```bash
 make dev-deploy
 ```
+
+## Installing Simple Demo
+
+Create a Kubernetes cluster, and apply the following manifests:
+
+- simple demo application - `kubectl apply -f https://raw.githubusercontent.com/odigos-io/simple-demo/main/kubernetes/deployment.yaml`
+- jaeger - `kubectl apply -f https://raw.githubusercontent.com/odigos-io/simple-demo/main/kubernetes/jaeger.yaml`
+
+After you installed odigos:
+
+- instrument demo apps with odigos - `kubectl apply -f https://raw.githubusercontent.com/odigos-io/simple-demo/main/kubernetes/instrument-all.yaml`
+- add jaeger destination to odigos - `kubectl apply -f https://raw.githubusercontent.com/odigos-io/simple-demo/main/kubernetes/jaeger-dest.yaml`
+
+Do it all in one command:
+
+```bash
+kubectl kustomize https://github.com/odigos-io/simple-demo//kubernetes | kubectl apply -f -
+```
