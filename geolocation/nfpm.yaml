@@ -1,5 +1,5 @@
 name: odigos-demo-geolocation
-arch: all
+arch: amd64
 platform: linux
 version: 1.0.0
 section: default

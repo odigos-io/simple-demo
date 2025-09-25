@@ -1,1 +1,1 @@
-docker cp tc:/app ./dist
+docker cp tc-frontend:/app ./dist

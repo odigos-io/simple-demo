@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e
 
-# 1) Enable nginx configuration
-rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
-ln -sf /etc/nginx/sites-available/odigos-demo-currency.conf \
-       /etc/nginx/sites-enabled/odigos-demo-currency.conf
+# 1) Enable nginx configuration (RPM systems use conf.d)
+ln -sf /etc/nginx/conf.d/odigos-demo-currency.conf \
+       /etc/nginx/conf.d/odigos-demo-currency.conf.enabled
 
 # 2) Restart nginx to pick up the new configuration
 if command -v systemctl >/dev/null 2>&1; then

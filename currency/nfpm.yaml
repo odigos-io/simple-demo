@@ -1,6 +1,6 @@
 # ------------------------ Common metadata ------------------------
 name: odigos-demo-currency
-arch: all
+arch: amd64
 platform: linux
 version: 1.0.0
 section: web
@@ -15,7 +15,7 @@ description: |
 
 # ------------------------ Cross‑distro runtime deps --------------
 depends:
-  - php-fpm
+  - php-cli
   - nginx-full (>= 1.18)
 
 # ------------------------ Payload ------------------------
@@ -25,9 +25,8 @@ contents:
   - src: distribution/nginx.conf
     dst: /etc/nginx/sites-available/odigos-demo-currency.conf
     type: config
-  - src: distribution/php-fpm.conf
-    dst: /etc/odigos-demo-currency/php-fpm.conf
-    type: config
+  - src: distribution/systemd.service
+    dst: /lib/systemd/system/odigos-demo-currency.service
 
 scripts:
   preinstall:  distribution/preinstall.sh
@@ -37,29 +36,31 @@ scripts:
 # ------------------------ Distro‑specific overrides --------------
 overrides:
   rpm:
-    # “all” is **not** valid in RPM – the neutral value is “noarch”
+    # "all" is **not** valid in RPM – the neutral value is "noarch"
     # rpm package names differ
     depends:
-      - php-fpm
+      - php-cli
       - nginx
     contents:
       - src: ./dist/app
         dst: /opt/odigos-demo-currency
-      # Pool file path
-      - src: distribution/php-fpm.conf
-        dst: /etc/php-fpm.d/odigos-demo-currency.conf
-        type: config
-      # nginx upstream socket is different on RHEL ≥ 9
+      # nginx configuration
       - src: distribution/nginx.conf
         dst: /etc/nginx/conf.d/odigos-demo-currency.conf
         type: config
+      - src: distribution/systemd.service
+        dst: /lib/systemd/system/odigos-demo-currency.service
+    scripts:
+      preinstall:  distribution/preinstall.sh
+      postinstall: distribution/postinstall-rpm.sh
+      preremove:   distribution/preremove-rpm.sh
   deb:
     depends:
-      - php-fpm (>= 8.2)
+      - php-cli (>= 8.2)
       - nginx-full (>= 1.18)
 
 rpm:
-  arch: noarch
+  arch: amd64
 
 deb:
-  arch: all
+  arch: amd64
