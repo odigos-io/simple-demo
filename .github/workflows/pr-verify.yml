@@ -120,9 +120,9 @@ jobs:
         run: |
           # Build webapp for frontend service (avoid Docker network issues)
           if [ "${{ matrix.service }}" = "frontend" ]; then
-            cd ../frontend/webapp && yarn && yarn build && cd ../..
-            rm -rf ../frontend/src/main/resources/static/*
-            cp -r ../frontend/webapp/out/* ../frontend/src/main/resources/static/
+            cd webapp && yarn && yarn build && cd ..
+            rm -rf src/main/resources/static/*
+            cp -r webapp/out/* src/main/resources/static/
           fi
 
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
@@ -135,9 +135,3 @@ jobs:
           sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
           nfpm pkg --packager deb --target dist/
-
-
-
-          nfpm pkg --packager deb --target dist/
-
-
