@@ -7,7 +7,6 @@ ExecStart=/usr/bin/php -S localhost:8085 -t /opt/odigos-demo-currency
 KillMode=mixed
 Restart=on-failure
 RestartSec=1s
-RestartSteps=3
 RestartMaxDelaySec=1min
 Type=simple
 User=odigos
