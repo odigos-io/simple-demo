@@ -122,7 +122,12 @@ jobs:
           if [ "${{ matrix.service }}" = "frontend" ]; then
             cd webapp && yarn && yarn build && cd ..
             rm -rf src/main/resources/static/*
-            cp -r webapp/out/* src/main/resources/static/
+            if [ -d "webapp/out" ]; then
+              cp -r webapp/out/* src/main/resources/static/
+            else
+              echo "Error: webapp/out directory not found after build"
+              exit 1
+            fi
           fi
 
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .

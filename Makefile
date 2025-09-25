@@ -13,7 +13,12 @@ generate-webapp:
 	@echo "Generating webapp..."
 	@cd $(PROJECT_DIR)frontend/webapp && yarn && yarn build
 	rm -rf $(PROJECT_DIR)/frontend/src/main/resources/static/*
-	cp -r $(PROJECT_DIR)frontend/webapp/out/* $(PROJECT_DIR)/frontend/src/main/resources/static/
+	@if [ -d "$(PROJECT_DIR)frontend/webapp/out" ]; then \
+		cp -r $(PROJECT_DIR)frontend/webapp/out/* $(PROJECT_DIR)/frontend/src/main/resources/static/; \
+	else \
+		echo "Error: webapp/out directory not found after build"; \
+		exit 1; \
+	fi
 
 dev-deploy-%:
 	@echo "Deploying $* to Kubernetes..."
