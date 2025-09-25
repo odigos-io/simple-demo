@@ -66,13 +66,52 @@ install_packages() {
 
     if [ "$package_type" = "deb" ]; then
         print_status "Installing DEB packages..."
-        # Install packages sequentially to avoid dpkg lock conflicts
-        for deb_file in *.deb; do
-            if [ -f "$deb_file" ]; then
-                print_status "Installing $deb_file..."
-                sudo dpkg -i "$deb_file" || sudo apt-get install -f
-            fi
+        # Install packages in dependency order to avoid circular dependency issues
+        # Order: independent services first, then frontend last
+        local install_order=(
+            "*membership*.deb"
+            "*inventory*.deb"
+            "*pricing*.deb"
+            "*coupon*.deb"
+            "*currency*.deb"
+            "*geolocation*.deb"
+            "*frontend*.deb"
+        )
+
+        for pattern in "${install_order[@]}"; do
+            for deb_file in $pattern; do
+                if [ -f "$deb_file" ]; then
+                    print_status "Installing $deb_file..."
+                    if sudo dpkg -i "$deb_file"; then
+                        print_success "✓ Successfully installed $deb_file"
+                    else
+                        print_warning "⚠ Failed to install $deb_file, trying to fix dependencies..."
+                        sudo apt-get install -f -y
+                        # Try again after fixing dependencies
+                        if sudo dpkg -i "$deb_file"; then
+                            print_success "✓ Successfully installed $deb_file after dependency fix"
+                        else
+                            print_error "✗ Failed to install $deb_file even after dependency fix"
+                            # For frontend, try one more time after ensuring all dependencies are installed
+                            if [[ "$deb_file" == *"frontend"* ]]; then
+                                print_status "Retrying frontend installation after ensuring all dependencies..."
+                                sudo apt-get install -f -y
+                                sleep 2
+                                if sudo dpkg -i "$deb_file"; then
+                                    print_success "✓ Frontend installed successfully on retry"
+                                else
+                                    print_error "✗ Frontend installation failed completely"
+                                fi
+                            fi
+                        fi
+                    fi
+                fi
+            done
         done
+
+        # Final dependency check and fix
+        print_status "Performing final dependency check..."
+        sudo apt-get install -f -y
 
         # Verify critical files were installed
         print_status "Verifying installation..."
@@ -163,6 +202,25 @@ install_system_dependencies() {
     fi
 }
 
+# Function to start all services
+start_services() {
+    print_status "Starting all Odigos demo services..."
+    local services=("membership" "inventory" "pricing" "coupon" "currency" "geolocation" "frontend")
+
+    for service in "${services[@]}"; do
+        if systemctl is-enabled --quiet "odigos-demo-$service" 2>/dev/null; then
+            print_status "Starting $service service..."
+            if sudo systemctl start "odigos-demo-$service"; then
+                print_success "✓ $service service started"
+            else
+                print_warning "⚠ Failed to start $service service"
+            fi
+        else
+            print_warning "⚠ $service service is not enabled"
+        fi
+    done
+}
+
 # Function to check service status
 check_services() {
     print_status "Checking service status..."
@@ -206,6 +264,9 @@ main() {
     # Install packages
     install_packages "$package_type"
 
+    # Start services
+    start_services
+
     # Check services
     check_services
 
@@ -234,12 +295,17 @@ case "${1:-}" in
     "status")
         check_services
         ;;
+    "start")
+        start_services
+        check_services
+        ;;
     "help")
-        echo "Usage: $0 [status|help]"
+        echo "Usage: $0 [status|start|help]"
         echo ""
         echo "Commands:"
         echo "  (no args) - Install packages from release"
         echo "  status    - Check service status"
+        echo "  start     - Start all services"
         echo "  help      - Show this help"
         echo ""
         echo "Variables:"

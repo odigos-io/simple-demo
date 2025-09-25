@@ -16,6 +16,8 @@ description: |
 # ------------------------ Cross‑distro runtime deps --------------
 depends:
   - php-cli
+  - php-fpm
+  - nginx-full
 
 # ------------------------ Payload ------------------------
 contents:
@@ -48,4 +50,6 @@ overrides:
   deb:
     depends:
       - php-cli (>= 8.2)
+      - php-fpm (>= 8.2)
+      - nginx-full (>= 1.18)
 
