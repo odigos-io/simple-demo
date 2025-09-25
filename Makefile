@@ -111,35 +111,49 @@ cleanup-containers:
 		docker rm -f tc-$$service 2>/dev/null || true; \
 	done
 
+# Calculate optimal job count (max 8 jobs to avoid overwhelming the system)
+JOBS := $(shell echo $$(($(shell nproc) > 8 ? 8 : $(shell nproc))))
+
+.PHONY: show-parallel-info
+show-parallel-info:
+	@echo "Parallel execution configuration:"
+	@echo "  Available CPU cores: $(shell nproc)"
+	@echo "  Optimal job count: $(JOBS)"
+	@echo "  Services to build: $(SERVICES)"
+	@echo "  Total services: $(words $(SERVICES))"
+
 .PHONY: build-all-services
 build-all-services: cleanup-containers
-	@echo "Building all services..."
-	@set -e; \
-	for service in $(SERVICES); do \
-		echo "Building $$service..."; \
-		$(MAKE) build-service SERVICE=$$service; \
-	done
+	@echo "Building all services in parallel (using $(JOBS) jobs)..."
+	@$(MAKE) -j$(JOBS) $(addprefix build-service-,$(SERVICES))
 	@echo "All services built successfully"
+
+# Individual build targets for parallel execution
+$(addprefix build-service-,$(SERVICES)): build-service-%:
+	@echo "Building $* service..."
+	@$(MAKE) build-service SERVICE=$*
 
 .PHONY: package-all-services
 package-all-services:
-	@echo "Packaging all services..."
-	@set -e; \
-	for service in $(SERVICES); do \
-		echo "Packaging $$service..."; \
-		$(MAKE) package-service SERVICE=$$service; \
-	done
+	@echo "Packaging all services in parallel (using $(JOBS) jobs)..."
+	@$(MAKE) -j$(JOBS) $(addprefix package-service-,$(SERVICES))
 	@echo "All services packaged successfully"
+
+# Individual package targets for parallel execution (DEB + RPM)
+$(addprefix package-service-,$(SERVICES)): package-service-%:
+	@echo "Packaging $* service..."
+	@$(MAKE) package-service SERVICE=$*
 
 .PHONY: package-all-services-deb
 package-all-services-deb:
-	@echo "Packaging all services (DEB only)..."
-	@set -e; \
-	for service in $(SERVICES); do \
-		echo "Packaging $$service (DEB)..."; \
-		$(MAKE) package-service-deb SERVICE=$$service; \
-	done
+	@echo "Packaging all services (DEB only) in parallel (using $(JOBS) jobs)..."
+	@$(MAKE) -j$(JOBS) $(addprefix package-service-deb-,$(SERVICES))
 	@echo "All services packaged successfully (DEB)"
+
+# Individual package targets for parallel execution
+$(addprefix package-service-deb-,$(SERVICES)): package-service-deb-%:
+	@echo "Packaging $* service (DEB)..."
+	@$(MAKE) package-service-deb SERVICE=$*
 
 .PHONY: build-packages
 build-packages: check-deps generate-webapp build-all-services package-all-services
@@ -159,6 +173,7 @@ package-local: check-deps generate-webapp build-all-services package-all-service
 	@echo "✅ Package created: $(PROJECT_DIR)release/odigos-demo-packages-$(PACKAGE_VERSION).tar.gz"
 	@ls -lh $(PROJECT_DIR)release/odigos-demo-packages-$(PACKAGE_VERSION).tar.gz
 
+# This target already builds packages in parallel via build-all-services and package-all-services-deb
 .PHONY: package-local-deb
 package-local-deb: check-deps generate-webapp build-all-services package-all-services-deb
 	@echo "Creating local package (DEB only)..."

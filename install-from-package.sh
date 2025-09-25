@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Handle interruptions gracefully
+trap 'handle_interrupted_installation; exit 1' INT TERM
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -43,6 +46,14 @@ detect_package_manager() {
     fi
 }
 
+# Function to handle interrupted installations
+handle_interrupted_installation() {
+    print_warning "Installation was interrupted. Attempting to fix dpkg state..."
+    sudo dpkg --configure -a
+    print_status "Running apt-get install -f to fix any broken dependencies..."
+    sudo apt-get install -f -y
+}
+
 # Function to install packages
 install_packages() {
     local package_type="$1"
@@ -55,7 +66,13 @@ install_packages() {
 
     if [ "$package_type" = "deb" ]; then
         print_status "Installing DEB packages..."
-        sudo dpkg -i *.deb || sudo apt-get install -f
+        # Install packages sequentially to avoid dpkg lock conflicts
+        for deb_file in *.deb; do
+            if [ -f "$deb_file" ]; then
+                print_status "Installing $deb_file..."
+                sudo dpkg -i "$deb_file" || sudo apt-get install -f
+            fi
+        done
 
         # Verify critical files were installed
         print_status "Verifying installation..."
@@ -79,6 +96,23 @@ install_packages() {
     # Cleanup
     cd /
     rm -rf "$temp_dir"
+
+    # Final verification
+    print_status "Final verification..."
+    local services=("membership" "inventory" "pricing" "coupon" "currency" "geolocation" "frontend")
+    local installed_count=0
+
+    for service in "${services[@]}"; do
+        if dpkg -l | grep -q "odigos-demo-$service"; then
+            installed_count=$((installed_count + 1))
+        fi
+    done
+
+    if [ "$installed_count" -eq "${#services[@]}" ]; then
+        print_success "All $installed_count services installed successfully"
+    else
+        print_warning "Only $installed_count out of ${#services[@]} services installed"
+    fi
 }
 
 # Function to install system dependencies

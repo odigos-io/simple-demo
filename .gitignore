@@ -1,3 +1,4 @@
 */dist/
 .DS_Store
 odigos-demo-packages-1.0.0-deb.tar.gz
+*.yaml-E

@@ -49,8 +49,3 @@ overrides:
     depends:
       - php-cli (>= 8.2)
 
-rpm:
-  arch: amd64
-
-deb:
-  arch: amd64
