@@ -56,6 +56,21 @@ install_packages() {
     if [ "$package_type" = "deb" ]; then
         print_status "Installing DEB packages..."
         sudo dpkg -i *.deb || sudo apt-get install -f
+
+        # Verify critical files were installed
+        print_status "Verifying installation..."
+        if [ -f "/etc/nginx/sites-available/odigos-demo-currency.conf" ]; then
+            print_success "✓ Currency nginx configuration installed"
+        else
+            print_warning "○ Currency nginx configuration missing"
+        fi
+
+        # Reload nginx if configuration exists
+        if [ -f "/etc/nginx/sites-available/odigos-demo-currency.conf" ]; then
+            print_status "Reloading nginx configuration..."
+            sudo nginx -t && sudo systemctl reload nginx || true
+        fi
+
     else
         print_status "Installing RPM packages..."
         sudo rpm -i *.rpm
@@ -64,6 +79,54 @@ install_packages() {
     # Cleanup
     cd /
     rm -rf "$temp_dir"
+}
+
+# Function to install system dependencies
+install_system_dependencies() {
+    local package_type="$1"
+
+    print_status "Installing system dependencies..."
+
+    if [ "$package_type" = "deb" ]; then
+        # Update package lists
+        sudo apt-get update
+
+        # Install required system packages
+        sudo apt-get install -y \
+            openjdk-17-jre-headless \
+            nodejs \
+            npm \
+            php-cli \
+            nginx \
+            python3 \
+            python3-pip \
+            dotnet-sdk-8.0 \
+            ruby \
+            ruby-dev \
+            build-essential
+
+        # Install Ruby gems for geolocation service
+        sudo gem install bundler
+
+    else
+        # For RPM-based systems
+        sudo dnf install -y \
+            java-17-openjdk-headless \
+            nodejs \
+            npm \
+            php-cli \
+            nginx \
+            python3 \
+            python3-pip \
+            dotnet-sdk-8.0 \
+            ruby \
+            ruby-devel \
+            gcc \
+            make
+
+        # Install Ruby gems for geolocation service
+        sudo gem install bundler
+    fi
 }
 
 # Function to check service status
@@ -102,6 +165,9 @@ main() {
     # Detect package manager
     local package_type=$(detect_package_manager)
     print_status "Detected package manager: $package_type"
+
+    # Install system dependencies first
+    install_system_dependencies "$package_type"
 
     # Install packages
     install_packages "$package_type"

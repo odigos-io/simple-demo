@@ -16,15 +16,11 @@ description: |
 # ------------------------ Cross‑distro runtime deps --------------
 depends:
   - php-cli
-  - nginx-full (>= 1.18)
 
 # ------------------------ Payload ------------------------
 contents:
   - src: ./dist/app
     dst: /opt/odigos-demo-currency
-  - src: distribution/nginx.conf
-    dst: /etc/nginx/sites-available/odigos-demo-currency.conf
-    type: config
   - src: distribution/systemd.service
     dst: /lib/systemd/system/odigos-demo-currency.service
 
@@ -40,14 +36,9 @@ overrides:
     # rpm package names differ
     depends:
       - php-cli
-      - nginx
     contents:
       - src: ./dist/app
         dst: /opt/odigos-demo-currency
-      # nginx configuration
-      - src: distribution/nginx.conf
-        dst: /etc/nginx/conf.d/odigos-demo-currency.conf
-        type: config
       - src: distribution/systemd.service
         dst: /lib/systemd/system/odigos-demo-currency.service
     scripts:
@@ -57,7 +48,6 @@ overrides:
   deb:
     depends:
       - php-cli (>= 8.2)
-      - nginx-full (>= 1.18)
 
 rpm:
   arch: amd64

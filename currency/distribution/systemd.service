@@ -3,17 +3,17 @@ Description=Odigos Demo Currency Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/php -S localhost:9000 -t /opt/odigos-demo-currency
+ExecStart=/usr/bin/php -S localhost:8085 -t /opt/odigos-demo-currency
 KillMode=mixed
 Restart=on-failure
 RestartSec=1s
-RestartSteps=1s
+RestartSteps=3
 RestartMaxDelaySec=1min
 Type=simple
 User=odigos
 Group=odigos
 WorkingDirectory=/opt/odigos-demo-currency
-Environment="PORT=9000"
+Environment="PORT=8085"
 Environment="GEOLOCATION_SERVICE_HOST=localhost:8086"
 
 [Install]
