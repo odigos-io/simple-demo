@@ -7,3 +7,5 @@ resources:
   - jaeger.yaml
   - instrument-all.yaml
   - jaeger-dest.yaml
+  - promethues.yaml
+  - promethues-dest.yaml
