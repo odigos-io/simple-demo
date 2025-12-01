@@ -1,1 +1,1 @@
-docker cp tc:/app ./dist/app
+docker cp tc-coupon:/app ./dist/app

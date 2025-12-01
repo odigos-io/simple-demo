@@ -1,5 +1,5 @@
 name: odigos-demo-pricing
-arch: all
+arch: amd64
 platform: linux
 version: 1.0.0
 section: default

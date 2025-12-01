@@ -72,49 +72,6 @@ jobs:
           file: ${{ matrix.service }}/Dockerfile
           context: ${{ matrix.service }}
 
-  ######################
-  ####  MEMBERSHIP  ####
-  ######################
-  membership:
-    runs-on:
-      labels: ubuntu-latest
-    steps:
-      - name: Store new version in env
-        run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ env.TAG }}
-
-      - name: Set env
-        id: vars
-        run: |
-          SHORT_COMMIT=$(git rev-parse --short HEAD)
-          echo "short_commit=${SHORT_COMMIT}" >> $GITHUB_ENV
-
-      - name: Install GemFury CLI
-        run: |
-          sudo bash -c "echo 'deb [trusted=yes] https://apt.fury.io/cli/ * *' > /etc/apt/sources.list.d/fury-cli.list"
-          sudo apt-get update
-          sudo apt-get install -y fury-cli
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.22"
-
-      - name: Release Membership Linux Package
-        uses: goreleaser/goreleaser-action@v5
-        with:
-          distribution: goreleaser
-          version: latest
-          args: release --clean
-          workdir: membership
-        env:
-          FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
-          FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   ##############################
   ####  Linux pkg via NPFM  ####
@@ -125,19 +82,40 @@ jobs:
         include:
           - service: coupon
             arch: amd64
-            pkg_arch: all
+            pkg_arch: amd64
+          - service: coupon
+            arch: arm64
+            pkg_arch: arm64
           - service: currency
             arch: amd64
-            pkg_arch: all
+            pkg_arch: amd64
+          - service: currency
+            arch: arm64
+            pkg_arch: arm64
           - service: frontend
             arch: amd64
-            pkg_arch: all
+            pkg_arch: amd64
+          - service: frontend
+            arch: arm64
+            pkg_arch: arm64
           - service: geolocation
             arch: amd64
-            pkg_arch: all
+            pkg_arch: amd64
+          - service: geolocation
+            arch: arm64
+            pkg_arch: arm64
           - service: inventory
             arch: amd64
-            pkg_arch: all
+            pkg_arch: amd64
+          - service: inventory
+            arch: arm64
+            pkg_arch: arm64
+          - service: membership
+            arch: amd64
+            pkg_arch: amd64
+          - service: membership
+            arch: arm64
+            pkg_arch: arm64
           - service: pricing
             arch: amd64
             pkg_arch: amd64
@@ -182,11 +160,24 @@ jobs:
           FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Build webapp for frontend service (avoid Docker network issues)
+          if [ "${{ matrix.service }}" = "frontend" ]; then
+            cd webapp && yarn && yarn build && cd ..
+            rm -rf src/main/resources/static/*
+            if [ -d "webapp/out" ]; then
+              cp -r webapp/out/* src/main/resources/static/
+            else
+              echo "Error: webapp/out directory not found after build"
+              exit 1
+            fi
+          fi
+
           docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
-          docker create --name tc ${{ matrix.service }}
+          docker rm -f tc-${{ matrix.service }} 2>/dev/null || true
+          docker create --name tc-${{ matrix.service }} ${{ matrix.service }}
           mkdir -p ./dist
           sh ./distribution/copy-assets.sh
-          docker rm tc
+          docker rm tc-${{ matrix.service }}
           sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
           sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
           nfpm pkg --packager rpm --target dist/
