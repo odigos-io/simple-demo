@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -15,6 +16,7 @@ import (
 
 const (
 	httpPort = 8080
+	pricingEndpointEnvName = "PRICING_SERVICE_HOST"
 )
 
 type IsMemberResponse struct {
@@ -65,6 +67,13 @@ func main() {
 		data, err := json.Marshal(res)
 		if err != nil {
 			slog.Error("failed to marshal response", "error", err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, err = http.Get(fmt.Sprintf("http://%s/price?id=0", os.Getenv(pricingEndpointEnvName)))
+		if err != nil {
+			slog.Error("failed to call pricing service", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
