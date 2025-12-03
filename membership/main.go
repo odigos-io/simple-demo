@@ -71,7 +71,14 @@ func main() {
 			return
 		}
 
-		_, err = http.Get(fmt.Sprintf("http://%s/price?id=0", os.Getenv(pricingEndpointEnvName)))
+		req, err := http.NewRequestWithContext(request.Context(), "GET", (fmt.Sprintf("http://%s/price?id=0", os.Getenv(pricingEndpointEnvName))), nil)
+		if err != nil {
+			slog.Error("failed to create request to pricing service", "error", err)
+			writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		_, err = http.DefaultClient.Do(req)
 		if err != nil {
 			slog.Error("failed to call pricing service", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
