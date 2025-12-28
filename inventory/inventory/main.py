@@ -57,6 +57,17 @@ def buy_product():
     time.sleep(1)
     return jsonify({"message": "Product purchased successfully"})
 
+@app.route('/health/liveness', methods=['GET'])
+def liveness():
+    logging.debug("Liveness probe check")
+    return jsonify({"status": "alive"}), 200
+
+@app.route('/health/readiness', methods=['GET'])
+def readiness():
+    logging.debug("Readiness probe check")
+    # You can add additional checks here (e.g., database connectivity)
+    return jsonify({"status": "ready"}), 200
+
 def signal_handler(sig, frame):
     logging.info('Terminating inventory service')
     sys.exit(0)
