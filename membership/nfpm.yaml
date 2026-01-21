@@ -1,0 +1,36 @@
+name: odigos-demo-membership
+arch: amd64
+platform: linux
+version: 1.0.0
+section: default
+priority: extra
+maintainer: Odigos
+description: |
+  Demo Go application for testing Odigos
+vendor: Odigos
+homepage: https://odigos.io
+contents:
+- src: distribution/systemd.service
+  dst: /lib/systemd/system/odigos-demo-membership.service
+- src: ./dist/app/odigos-demo-membership
+  dst: /usr/bin/odigos-demo-membership
+scripts:
+  preinstall: ./distribution/preinstall.sh
+  postinstall: ./distribution/postinstall.sh
+  preremove: ./distribution/preremove.sh
+overrides:
+  rpm:
+    depends:
+    - glibc
+    contents:
+    - src: distribution/systemd.service
+      dst: /lib/systemd/system/odigos-demo-membership.service
+    - src: ./dist/app/odigos-demo-membership
+      dst: /usr/bin/odigos-demo-membership
+    scripts:
+      preinstall: ./distribution/preinstall.sh
+      postinstall: ./distribution/postinstall.sh
+      preremove: ./distribution/preremove.sh
+  deb:
+    depends:
+    - libc6

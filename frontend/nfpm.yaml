@@ -1,14 +1,22 @@
 name: odigos-demo-frontend
-arch: all
+arch: amd64
 platform: linux
 version: 1.0.0
 section: default
 priority: extra
 maintainer: Odigos
 description: |
-  Demo Java application for testing Odigos
+  Demo Java application for testing Odigos - Main frontend service
 vendor: Odigos
 homepage: https://odigos.io
+depends:
+- openjdk-17-jre-headless
+- odigos-demo-coupon
+- odigos-demo-currency
+- odigos-demo-geolocation
+- odigos-demo-inventory
+- odigos-demo-membership
+- odigos-demo-pricing
 contents:
 - src: distribution/systemd.service
   dst: /lib/systemd/system/odigos-demo-frontend.service
