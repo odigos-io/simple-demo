@@ -1,0 +1,13 @@
+# Package output
+/bin/
+/dist/
+
+# Editor and OS
+*.swp
+*~
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.iml
