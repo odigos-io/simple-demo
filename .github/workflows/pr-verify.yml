@@ -8,17 +8,19 @@ permissions:
   contents: read
 
 jobs:
-  verify-docker-builds:
+  build-packages:
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - service: coupon
-          - service: currency
-          - service: frontend
-          - service: geolocation
-          - service: inventory
-          - service: membership
-          - service: pricing
+        service:
+          - coupon
+          - currency
+          - frontend
+          - geolocation
+          - inventory
+          - membership
+          - pricing
+          - load-generator
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -32,99 +34,13 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Build Docker Image for ${{ matrix.service }}
-        uses: docker/build-push-action@v5
-        with:
-          push: false
-          load: true
-          platforms: linux/amd64
-          file: ${{ matrix.service }}/Dockerfile
-          context: ${{ matrix.service }}
-          tags: odigos-demo-${{ matrix.service }}:pr-test
-
-      - name: Verify image was created
-        run: |
-          docker images | grep odigos-demo-${{ matrix.service }}
-          echo "✅ Successfully built ${{ matrix.service }} Docker image"
-
-  verify-linux-builds:
-    strategy:
-      matrix:
-        include:
-          - service: coupon
-            arch: amd64
-            pkg_arch: all
-          - service: currency
-            arch: amd64
-            pkg_arch: all
-          - service: frontend
-            arch: amd64
-            pkg_arch: all
-          - service: geolocation
-            arch: amd64
-            pkg_arch: all
-          - service: inventory
-            arch: amd64
-            pkg_arch: all
-          - service: pricing
-            arch: amd64
-            pkg_arch: amd64
-          - service: pricing
-            arch: arm64
-            pkg_arch: arm64
-      fail-fast: false
-    runs-on:
-      labels: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'
-
-      - name: Install nfpm
-        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
-
-      - name: Build
+      - name: Build and package ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
-        run: |
-          docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
-          docker create --name tc ${{ matrix.service }}
-          mkdir -p ./dist
-          sh ./distribution/copy-assets.sh
-          docker rm tc
-          sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
-          sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
-          nfpm pkg --packager rpm --target dist/
-          nfpm pkg --packager deb --target dist/
+        run: make package build
 
-
-  membership-linux-builds:
-    runs-on:
-      labels: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set env
-        id: vars
-        run: |
-          SHORT_COMMIT=$(git rev-parse --short HEAD)
-          echo "short_commit=${SHORT_COMMIT}" >> $GITHUB_ENV
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Upload deb and rpm artifacts
+        uses: actions/upload-artifact@v4
         with:
-          go-version: '1.22'
-
-      - name: Release Membership Linux Package
-        uses: goreleaser/goreleaser-action@v5
-        with:
-          distribution: goreleaser
-          version: latest
-          workdir: membership
-          args: release --snapshot --skip=publish --rm-dist
+          name: packages-${{ matrix.service }}
+          path: ${{ matrix.service }}/bin/
+          include-hidden-files: false
