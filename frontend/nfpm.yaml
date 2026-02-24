@@ -1,7 +1,8 @@
 name: odigos-demo-frontend
-arch: all
+# arch/version set by Docker build args (TARGETARCH, VERSION) in package stage
+arch: ${TARGETARCH}
 platform: linux
-version: 1.0.0
+version: ${VERSION}
 section: default
 priority: extra
 maintainer: Odigos
@@ -22,18 +23,6 @@ overrides:
   rpm:
     depends:
     - java-17-openjdk-headless
-    - odigos-demo-coupon
-    - odigos-demo-currency
-    - odigos-demo-geolocation
-    - odigos-demo-inventory
-    - odigos-demo-membership
-    - odigos-demo-pricing
   deb:
     depends:
     - openjdk-17-jre-headless
-    - odigos-demo-coupon
-    - odigos-demo-currency
-    - odigos-demo-geolocation
-    - odigos-demo-inventory
-    - odigos-demo-membership
-    - odigos-demo-pricing

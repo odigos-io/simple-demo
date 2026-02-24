@@ -1,0 +1,9 @@
+# Exclude build artifacts from Docker context
+bin
+dist
+target
+.git
+.gitignore
+webapp/.next
+webapp/out
+webapp/node_modules
