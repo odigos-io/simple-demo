@@ -30,7 +30,7 @@ threads threads_count, threads_count
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 port ENV.fetch("PORT", 3000)
 
-# Allow puma to be restarted by `bin/rails restart` command.
+# Allow puma to be restarted by `binaries/rails restart` command.
 plugin :tmp_restart
 
 # Run the Solid Queue supervisor inside of Puma for single-server deployments

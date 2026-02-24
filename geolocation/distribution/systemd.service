@@ -7,22 +7,21 @@ Type=simple
 User=odigos
 Group=odigos
 WorkingDirectory=/opt/odigos-demo-geolocation
+; Rails
+Environment="RAILS_ENV=production"
+Environment="RAILS_MASTER_KEY=df0300c20246e24d331787f6540a72fa"
+Environment="PORT=8086"
+; Bundler deployment (use app vendor/bundle only; GEM_HOME/GEM_PATH so app's Bundler 2.6 is used, not system 2.4)
+Environment="GEM_HOME=/opt/odigos-demo-geolocation/vendor/bundle"
+Environment="GEM_PATH=/opt/odigos-demo-geolocation/vendor/bundle"
 Environment="BUNDLE_GEMFILE=/opt/odigos-demo-geolocation/Gemfile"
 Environment="BUNDLE_PATH=/opt/odigos-demo-geolocation/vendor/bundle"
-Environment="LD_LIBRARY_PATH=/opt/odigos-demo-geolocation/embedded-ruby/lib"
 Environment="BUNDLE_WITHOUT=development:test"
 Environment="BUNDLE_DEPLOYMENT=1"
 Environment="BUNDLE_DISABLE_SHARED_GEMS=1"
-Environment="RAILS_ENV=production"
-Environment="PORT=8086"
-
-ExecStart=/usr/bin/env bash -lc '\
-  cd /opt/odigos-demo-geolocation && \
-  /opt/odigos-demo-geolocation/embedded-ruby/bin/ruby \
-    /opt/odigos-demo-geolocation/embedded-ruby/bin/bundle exec bin/rails db:prepare && \
-  exec /opt/odigos-demo-geolocation/embedded-ruby/bin/ruby \
-    /opt/odigos-demo-geolocation/embedded-ruby/bin/bundle exec bin/rails server --port=${PORT}'
-
+; Use bundle exec so the app uses vendor/bundle (built in package), not system gems
+ExecStart=/usr/bin/env bash -c 'cd /opt/odigos-demo-geolocation && binaries/bundle exec binaries/rails db:prepare && exec binaries/bundle exec binaries/rails server -p ${PORT} -b 0.0.0.0'
+KillMode=mixed
 Restart=on-failure
 RestartSec=5
 
