@@ -1,0 +1,21 @@
+name: odigos-demo-membership
+# arch/version set by Docker build args (TARGETARCH, VERSION) in package stage
+arch: ${TARGETARCH}
+platform: linux
+version: ${VERSION}
+section: default
+priority: extra
+maintainer: Odigos
+description: |
+  Demo Go membership service for testing Odigos
+vendor: Odigos
+homepage: https://odigos.io
+contents:
+- src: distribution/systemd.service
+  dst: /lib/systemd/system/odigos-demo-membership.service
+- src: ./dist/app
+  dst: /usr/bin
+scripts:
+  preinstall: ./distribution/preinstall.sh
+  postinstall: ./distribution/postinstall.sh
+  preremove: ./distribution/preremove.sh
