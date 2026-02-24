@@ -18,7 +18,7 @@ RUN mkdir -p /workspace/payload && \
     cp *.php /workspace/payload/ 2>/dev/null || true && \
     cp -r vendor /workspace/payload/
 
-# --- Runtime image ---
+# --- Runtime image: PHP-FPM only (nginx runs in separate container in k8s) ---
 FROM php:8.2.29-fpm AS app
 WORKDIR /app
 COPY --from=builder /workspace/payload /app
