@@ -8,6 +8,7 @@ PKG_NAME := odigos-demo-load-generator
 
 .PHONY: package clean build build-amd build-arm build-% package-amd package-arm package-% install install-apt install-yum uninstall uninstall-apt uninstall-yum
 
+# Build runtime image for all platforms (two single-arch builds, works with default docker driver)
 build:
 	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl build-all
 

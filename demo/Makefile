@@ -9,7 +9,7 @@ PKG_NAME  := odigos-demo
 .PHONY: package clean build build-amd build-arm build-% package-amd package-arm package-% install install-apt install-yum uninstall uninstall-apt uninstall-yum
 
 # Meta-package has no app image; these targets are no-ops for compatibility with other apps
-build: pacakge
+build: package
 	@:
 
 build-amd: package-amd

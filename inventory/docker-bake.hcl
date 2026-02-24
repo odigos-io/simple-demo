@@ -78,7 +78,7 @@ target "package-arm64" {
 }
 
 group "build-all" {
-  targets = ["app-all"]
+  targets = ["app-amd64", "app-arm64"]
 }
 
 # Group to build both single-arch package images (for make package artifact extraction)

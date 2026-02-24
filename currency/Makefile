@@ -8,7 +8,7 @@ PKG_NAME   := odigos-demo-currency
 
 .PHONY: package clean build build-all package-all build-amd build-arm package-amd package-arm install install-apt install-yum uninstall uninstall-apt uninstall-yum
 
-# Build runtime image for all platforms (multi-arch)
+# Build runtime image for all platforms (two single-arch builds, works with default docker driver)
 build:
 	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl build-all
 

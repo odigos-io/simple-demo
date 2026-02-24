@@ -65,7 +65,7 @@ target "package-arm64" {
 }
 
 group "build-all" {
-  targets = ["app-all"]
+  targets = ["app-amd64", "app-arm64"]
 }
 
 group "package-all" {
