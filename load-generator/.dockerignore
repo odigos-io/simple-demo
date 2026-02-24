@@ -1,0 +1,22 @@
+# Git and IDE
+.git
+.gitignore
+*.swp
+*~
+
+# Build artifacts (Rust)
+/target/
+
+# Package output (filled by package stage; do not copy into image)
+/bin/
+/dist/
+
+# CI / docs (not needed in image)
+.github
+README.md
+Makefile
+docker-bake.hcl
+.dockerignore
+
+# K8s / deployment (image does not need these)
+deployment/
