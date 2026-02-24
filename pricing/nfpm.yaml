@@ -1,7 +1,8 @@
 name: odigos-demo-pricing
-arch: all
+# arch/version set by Docker build args (TARGETARCH, VERSION) in package stage
+arch: ${TARGETARCH}
 platform: linux
-version: 1.0.0
+version: ${VERSION}
 section: default
 priority: extra
 maintainer: Odigos
@@ -10,7 +11,7 @@ description: |
 vendor: Odigos
 homepage: https://odigos.io
 depends:
-- dotnet-sdk-8.0
+- dotnet-runtime-8.0
 contents:
 - src: distribution/systemd.service
   dst: /lib/systemd/system/odigos-demo-pricing.service
