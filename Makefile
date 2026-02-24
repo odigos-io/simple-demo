@@ -1,6 +1,6 @@
 PROJECT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 # Apps that have a Docker image (build + dev-deploy)
-APPS = load-generator coupon currency frontend geolocation inventory membership pricing
+APPS = coupon currency frontend geolocation inventory membership pricing load-generator
 # All apps that produce Linux packages (includes demo meta-package)
 PACKAGE_APPS = $(APPS) demo
 

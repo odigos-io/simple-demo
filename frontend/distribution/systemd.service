@@ -16,7 +16,7 @@ Environment="PORT=8080"
 Environment="INVENTORY_SERVICE_HOST=localhost:8082"
 Environment="PRICING_SERVICE_HOST=localhost:8083"
 Environment="COUPON_SERVICE_HOST=localhost:8084"
-Environment="CURRENCY_SERVICE_HOST=localhost:9000"
+Environment="CURRENCY_SERVICE_HOST=localhost:8085"
 Environment="GEOLOCATION_SERVICE_HOST=localhost:8086"
 
 [Install]
