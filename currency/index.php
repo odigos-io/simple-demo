@@ -97,11 +97,13 @@ $app->get('/rate/{currencyPair}', function (
   }
 });
 
-// Register a signal handler for SIGTERM
+// Register a signal handler for SIGTERM when pcntl is available (e.g. CLI/Docker); PHP-FPM often has it disabled
 $shutdown = false;
-pcntl_signal(SIGTERM, function ($signo) use (&$shutdown, $logger) {
-  $logger->info("Received SIGTERM, shutting down gracefully...");
-  $shutdown = true;
-});
+if (function_exists('pcntl_signal')) {
+  pcntl_signal(SIGTERM, function ($signo) use (&$shutdown, $logger) {
+    $logger->info("Received SIGTERM, shutting down gracefully...");
+    $shutdown = true;
+  });
+}
 
 $app->run();

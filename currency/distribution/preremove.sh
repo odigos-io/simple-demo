@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Stop our service first so it is not running after package removes the unit file
+systemctl stop odigos-demo-currency.service 2>/dev/null || true
+
 # Remove pool file from all known locations
 find /etc/php -path "*/fpm/pool.d/odigos-demo-currency.conf" -delete 2>/dev/null || true
 find /etc/php -path "*/fpm/pool.d/zzz-disable-www.conf"     -delete 2>/dev/null || true
@@ -12,9 +15,12 @@ for unit in $(systemctl list-units --type=service --all \
   systemctl try-reload-or-restart "$unit" || true
 done
 
-# Remove nginx site & reload (if the path exists)
-rm -f /etc/nginx/sites-enabled/odigos-demo-currency.conf 2>/dev/null || true
-systemctl reload nginx || true
+# Remove nginx site and reload (only if nginx is installed)
+if [ -d /etc/nginx/sites-enabled ]; then
+  rm -f /etc/nginx/sites-enabled/odigos-demo-currency.conf 2>/dev/null || true
+  rm -f /etc/nginx/sites-available/odigos-demo-currency.conf 2>/dev/null || true
+  systemctl reload nginx 2>/dev/null || true
+fi
 
 
 PHP_VER=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')

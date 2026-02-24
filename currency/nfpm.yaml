@@ -19,15 +19,14 @@ contents:
 - src: distribution/php-fpm.conf
   dst: /etc/odigos-demo-currency/php-fpm.conf
 - src: distribution/nginx.conf
-  dst: /etc/nginx/sites-available/odigos-demo-currency.conf
-- src: distribution/php-fpm-start
-  dst: /usr/lib/odigos-demo-currency/php-fpm-start
+  dst: /etc/odigos-demo-currency/odigos-demo-currency.nginx.conf
 - src: distribution/disable-www.conf
   dst: /etc/odigos-demo-currency/disable-www.conf
 scripts:
   preinstall: ./distribution/preinstall.sh
   postinstall: ./distribution/postinstall.sh
   preremove: ./distribution/preremove.sh
+  postremove: ./distribution/postremove.sh
 overrides:
   rpm:
     depends:
@@ -35,16 +34,14 @@ overrides:
     - php-fpm
     - nginx
     contents:
-    - src: distribution/systemd.service
+    - src: distribution/systemd.service.rpm
       dst: /lib/systemd/system/odigos-demo-currency.service
     - src: ./dist/app
       dst: /opt/odigos-demo-currency
     - src: distribution/php-fpm.conf
       dst: /etc/odigos-demo-currency/php-fpm.conf
     - src: distribution/nginx.conf
-      dst: /etc/nginx/sites-available/odigos-demo-currency.conf
-    - src: distribution/php-fpm-start
-      dst: /usr/lib/odigos-demo-currency/php-fpm-start
+      dst: /etc/odigos-demo-currency/odigos-demo-currency.nginx.conf
     - src: distribution/disable-www.conf
       dst: /etc/odigos-demo-currency/disable-www.conf
   deb:
@@ -60,8 +57,6 @@ overrides:
     - src: distribution/php-fpm.conf
       dst: /etc/odigos-demo-currency/php-fpm.conf
     - src: distribution/nginx.conf
-      dst: /etc/nginx/sites-available/odigos-demo-currency.conf
-    - src: distribution/php-fpm-start
-      dst: /usr/lib/odigos-demo-currency/php-fpm-start
+      dst: /etc/odigos-demo-currency/odigos-demo-currency.nginx.conf
     - src: distribution/disable-www.conf
       dst: /etc/odigos-demo-currency/disable-www.conf
