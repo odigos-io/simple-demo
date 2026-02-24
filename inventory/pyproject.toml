@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.11"
 flask = "<3"
 werkzeug = "<3"
+opentelemetry-sdk = ">=1.27"
+opentelemetry-exporter-otlp-proto-grpc = ">=1.27"
+opentelemetry-instrumentation-flask = ">=0.48b0"
 
 
 [build-system]

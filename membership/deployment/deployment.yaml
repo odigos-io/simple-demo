@@ -21,4 +21,8 @@ spec:
         env:
         - name: PRICING_SERVICE_HOST
           value: pricing:8080
+        - name: OTEL_SERVICE_NAME
+          value: membership
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.tracing:4317
   

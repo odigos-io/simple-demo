@@ -18,5 +18,6 @@ RUN mvn -f /home/app/pom.xml --no-transfer-progress clean package
 
 FROM eclipse-temurin:17-jre-jammy
 COPY --from=build /home/app/target/*.jar /app/frontend.jar
-# USER 15000
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.10.0/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+ENV JAVA_TOOL_OPTIONS="-javaagent:/app/opentelemetry-javaagent.jar"
 CMD ["java", "-jar", "/app/frontend.jar"]

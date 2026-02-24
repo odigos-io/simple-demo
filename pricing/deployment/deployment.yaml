@@ -18,3 +18,8 @@ spec:
         image: dev/pricing:dev
         ports:
         - containerPort: 8080
+        env:
+        - name: OTEL_SERVICE_NAME
+          value: pricing
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.tracing:4317

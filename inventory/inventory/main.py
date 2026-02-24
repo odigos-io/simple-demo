@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import atexit
 
 # append known location for deps in distributed packages
 dep_location = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'site-packages'))
@@ -10,11 +11,27 @@ from flask import Flask, request, jsonify
 import time
 import signal
 
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource, SERVICE_NAME
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
 PORT = os.environ["PORT"] if "PORT" in os.environ else 8080
 
 logging.getLogger().setLevel(logging.INFO)
 
+resource = Resource.create({SERVICE_NAME: os.environ.get("OTEL_SERVICE_NAME", "inventory")})
+provider = TracerProvider(resource=resource)
+provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
+trace.set_tracer_provider(provider)
+atexit.register(provider.shutdown)
+
+tracer = trace.get_tracer("inventory")
+
 app = Flask(__name__)
+FlaskInstrumentor().instrument_app(app)
 
 class InventoryItem:
     def __init__(self, id, name, image):
@@ -54,7 +71,9 @@ def get_inventory():
 def buy_product():
     product_id = request.args.get('id', type=int)
     logging.info(f"Buying product with id {product_id}")
-    time.sleep(1)
+    with tracer.start_as_current_span("buy_product") as span:
+        span.set_attribute("product.id", product_id or -1)
+        time.sleep(1)
     return jsonify({"message": "Product purchased successfully"})
 
 def signal_handler(sig, frame):

@@ -1,6 +1,14 @@
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService("pricing"))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddOtlpExporter());
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

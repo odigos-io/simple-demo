@@ -20,6 +20,10 @@ spec:
         env:
           - name: MEMBERSHIP_SERVICE_HOST
             value: "membership:8080"
+          - name: OTEL_SERVICE_NAME
+            value: coupon
+          - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            value: http://jaeger.tracing:4317
         ports:
         - containerPort: 8080
         livenessProbe:

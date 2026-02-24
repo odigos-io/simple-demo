@@ -27,5 +27,11 @@ spec:
               value: currency:8080
             - name: GEOLOCATION_SERVICE_HOST
               value: geolocation:8080
+            - name: OTEL_SERVICE_NAME
+              value: frontend
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger.tracing:4317
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: grpc
           ports:
             - containerPort: 8080

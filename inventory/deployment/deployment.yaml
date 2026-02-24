@@ -18,5 +18,10 @@ spec:
         image: dev/inventory:dev
         ports:
         - containerPort: 8080
+        env:
+        - name: OTEL_SERVICE_NAME
+          value: inventory
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.tracing:4317
         securityContext:
           runAsUser: 1000

@@ -10,8 +10,14 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 const (
@@ -36,6 +42,38 @@ func getPortFromEnvOrDefault() int {
 	return port
 }
 
+func initTracer(ctx context.Context) (func(context.Context) error, error) {
+	exporter, err := otlptracegrpc.New(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := resource.New(ctx,
+		resource.WithAttributes(semconv.ServiceNameKey.String("membership")),
+		resource.WithFromEnv(),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(res),
+	)
+
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	))
+
+	return tp.Shutdown, nil
+}
+
+var httpClient = &http.Client{
+	Transport: otelhttp.NewTransport(http.DefaultTransport),
+}
+
 var tracer = otel.Tracer("github.com/keyval-dev/test-apps/kv-shop/membership")
 
 func checkIfMember(ctx context.Context, userId uuid.UUID) bool {
@@ -52,9 +90,17 @@ func checkIfMember(ctx context.Context, userId uuid.UUID) bool {
 }
 
 func main() {
+	ctx := context.Background()
+	shutdown, err := initTracer(ctx)
+	if err != nil {
+		slog.Error("failed to initialize tracer", "error", err)
+	} else {
+		defer shutdown(ctx)
+	}
+
 	port := getPortFromEnvOrDefault()
 	slog.Info("Starting Membership service", "port", port)
-	http.HandleFunc("/isMember", func(writer http.ResponseWriter, request *http.Request) {
+	isMemberHandler := http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		slog.Info("isMember called")
 
 		userId := uuid.New()
@@ -78,7 +124,7 @@ func main() {
 			return
 		}
 
-		_, err = http.DefaultClient.Do(req)
+		_, err = httpClient.Do(req)
 		if err != nil {
 			slog.Error("failed to call pricing service", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)
@@ -93,8 +139,9 @@ func main() {
 		}
 
 	})
+	http.Handle("/isMember", otelhttp.NewHandler(isMemberHandler, "isMember"))
 
-	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
+	err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
 	if err != nil {
 		slog.Error("failed to start Membership service", "error", err)
 	}

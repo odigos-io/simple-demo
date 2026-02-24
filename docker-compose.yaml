@@ -15,6 +15,8 @@ services:
       COUPON_SERVICE_HOST: coupon:8084
       CURRENCY_SERVICE_HOST: nginx:8085
       GEOLOCATION_SERVICE_HOST: geolocation:8086
+      OTEL_SERVICE_NAME: frontend
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
   membership:
     build:
       context: ./membership
@@ -23,6 +25,8 @@ services:
     environment:
       PORT: 8081
       PRICING_SERVICE_HOST: pricing:8080
+      OTEL_SERVICE_NAME: membership
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
   inventory:
     build:
       context: ./inventory
@@ -33,6 +37,8 @@ services:
       PYTHONPATH: /opt/odigos-demo-inventory/site-packages
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONUNBUFFERED: 1
+      OTEL_SERVICE_NAME: inventory
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
   pricing:
     build:
       context: ./pricing
@@ -40,6 +46,8 @@ services:
       - '8083:8083'
     environment:
       HTTP_PORTS: 8083
+      OTEL_SERVICE_NAME: pricing
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
   coupon:
     build:
       context: ./coupon
@@ -48,6 +56,8 @@ services:
     environment:
       PORT: 8084
       MEMBERSHIP_SERVICE_HOST: membership:8081
+      OTEL_SERVICE_NAME: coupon
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
   currency:
     build:
       context: ./currency
