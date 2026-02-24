@@ -1,4 +1,6 @@
+# Reload unit, enable on boot, and start/restart so install runs immediately and upgrade runs the new version
 if command -v systemctl >/dev/null 2>&1; then
+    systemctl daemon-reload
     systemctl enable odigos-demo-coupon.service
-    systemctl start odigos-demo-coupon.service
+    systemctl restart odigos-demo-coupon.service
 fi
