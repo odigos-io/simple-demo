@@ -1,0 +1,40 @@
+# Build and package artifacts (do not ship in app image or in dist/app)
+bin/
+dist/
+
+# Packaging and deployment (keep distribution/ and nfpm.yaml for package stage COPY)
+deployment/
+Dockerfile
+docker-bake.hcl
+Makefile
+
+# Version control and repo metadata
+.git/
+.gitignore
+.gitattributes
+*.md
+README*
+
+# Local and env (not for image)
+.env
+.env.*
+!.env.example
+
+# Tests and tooling (not needed at runtime)
+tests/
+phpunit.xml
+.phpunit.result.cache
+phpcs.xml
+.php-cs-fixer.*
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Composer (keep composer.json and composer.lock; vendor is built in image)
+# vendor/ is created by composer install in builder, so exclude local vendor from context
+vendor/

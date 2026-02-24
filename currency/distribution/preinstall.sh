@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+# Create odigos user for consistency with other Odigos demo packages
+getent passwd odigos >/dev/null || useradd --system --user-group --no-create-home --shell /sbin/nologin odigos
+
 # Optional: add Ondřej Sury’s PHP PPA on older hosts (Ubuntu 22.04, Debian 11).
 if command -v lsb_release >/dev/null 2>&1; then
   codename=$(lsb_release -c -s)

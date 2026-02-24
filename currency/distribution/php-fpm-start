@@ -1,0 +1,14 @@
+#!/bin/sh
+# Find and exec php-fpm (binary name varies: php8.2-fpm on Debian/Ubuntu, php-fpm on RHEL)
+CONF=/etc/odigos-demo-currency/php-fpm.conf
+for bin in /usr/sbin/php8.4-fpm /usr/sbin/php8.3-fpm /usr/sbin/php8.2-fpm \
+           /usr/sbin/php-fpm8.4 /usr/sbin/php-fpm8.3 /usr/sbin/php-fpm8.2 \
+           /usr/sbin/php-fpm php-fpm; do
+    case "$bin" in
+        /*) [ -x "$bin" ] || continue ;;
+        *)  bin=$(command -v "$bin" 2>/dev/null) || continue ;;
+    esac
+    exec "$bin" --nodaemonize -y "$CONF"
+done
+echo "odigos-demo-currency: no php-fpm binary found" >&2
+exit 1

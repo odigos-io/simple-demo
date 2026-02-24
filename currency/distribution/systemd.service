@@ -1,0 +1,21 @@
+[Unit]
+Description=Odigos Demo Currency Service
+After=network.target
+
+[Service]
+Type=simple
+User=odigos
+Group=odigos
+WorkingDirectory=/opt/odigos-demo-currency
+; PHP built-in server: HTTP on port 9000 (no nginx, no PHP-FPM)
+ExecStart=/usr/bin/php -S 0.0.0.0:9000 -t /opt/odigos-demo-currency /opt/odigos-demo-currency/index.php
+KillMode=mixed
+Restart=on-failure
+RestartSec=1
+RestartSteps=5
+RestartMaxDelaySec=60
+Environment="PORT=9000"
+Environment="GEOLOCATION_SERVICE_HOST=localhost:8086"
+
+[Install]
+WantedBy=multi-user.target
