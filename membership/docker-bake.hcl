@@ -14,7 +14,7 @@ variable "IMAGE" {
 }
 
 variable "APP_IMAGE" {
-  default = "registry.odigos.io/odigos-demo-membership"
+  default = "${REGISTRY}/odigos-demo-membership"
 }
 
 # --- Local arch only (default) ---
@@ -23,6 +23,15 @@ target "app" {
   dockerfile = "Dockerfile"
   target     = "app"
   tags       = ["${APP_IMAGE}:${VERSION}"]
+  output     = ["type=docker"]
+}
+
+target "package" {
+  context    = "."
+  dockerfile = "Dockerfile"
+  target     = "package"
+  tags       = ["${IMAGE}:${VERSION}"]
+  args       = { VERSION = VERSION }
   output     = ["type=docker"]
 }
 
@@ -45,16 +54,7 @@ target "app-arm64" {
   platforms = ["linux/arm64"]
 }
 
-# --- Package: goreleaser runs in container, one arch per image ---
-target "package" {
-  context    = "."
-  dockerfile = "Dockerfile"
-  target     = "package"
-  tags       = ["${IMAGE}:${VERSION}"]
-  args       = { VERSION = VERSION }
-  output     = ["type=docker"]
-}
-
+# --- Per-platform package images (for extracting artifacts to bin/) ---
 target "package-amd64" {
   inherits   = ["package"]
   platforms  = ["linux/amd64"]

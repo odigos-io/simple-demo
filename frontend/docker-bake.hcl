@@ -14,7 +14,7 @@ variable "IMAGE" {
 }
 
 variable "APP_IMAGE" {
-  default = "registry.odigos.io/odigos-demo-frontend"
+  default = "${REGISTRY}/odigos-demo-frontend"
 }
 
 # --- Local arch only (default) ---

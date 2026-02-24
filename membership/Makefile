@@ -6,44 +6,37 @@ IMAGE      := membership-package
 APP_IMAGE  := $(REGISTRY)/odigos-demo-membership
 PKG_NAME   := odigos-demo-membership
 
-.PHONY: package clean build build-amd build-arm build-% package-amd package-arm package-% install install-apt install-yum uninstall uninstall-apt uninstall-yum
+.PHONY: package clean build build-amd build-arm package-amd package-arm install install-apt install-yum uninstall uninstall-apt uninstall-yum
 
 # Build runtime image for all platforms (multi-arch)
 build:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl build-all
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl build-all
 
 # build-amd / build-arm: single-arch app image
 build-amd:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl app-amd64
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl app-amd64
 
 build-arm:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl app-arm64
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl app-arm64
 
-build-%:
-	@arch=$*; \
-	target=$$(case "$$arch" in amd) echo app-amd64;; arm) echo app-arm64;; *) echo "Unknown arch: $$arch (use amd or arm)"; exit 1;; esac); \
-	cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl $$target
-
-# Package: build package images (goreleaser runs in Docker, one arch per image), then copy to bin/
+# Package for all platforms (one bake group, then copy from both images)
 package:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-all; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-all; \
 	mkdir -p $(BIN_DIR); \
 	cid=$$(docker create $(IMAGE):amd64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	cid=$$(docker create $(IMAGE):arm64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
 
+# package-amd / package-arm: single-arch (bake one target, then copy)
 package-amd:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-amd64; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-amd64; \
 	mkdir -p $(BIN_DIR); cid=$$(docker create $(IMAGE):amd64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
 
 package-arm:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-arm64; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-arm64; \
 	mkdir -p $(BIN_DIR); cid=$$(docker create $(IMAGE):arm64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
-
-package-%:
-	@:
 
 clean:
 	@rm -rf $(BIN_DIR)

@@ -3,6 +3,7 @@
 APP_DIR   := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 BIN_DIR   := $(APP_DIR)bin
 TAG       ?= v0.0.0
+REGISTRY  ?= registry.odigos.io
 IMAGE     := demo-package
 PKG_NAME  := odigos-demo
 
@@ -19,19 +20,19 @@ build-arm: package-arm
 	@:
 
 package:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-all; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-all; \
 	mkdir -p $(BIN_DIR); \
 	cid=$$(docker create $(IMAGE):amd64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	cid=$$(docker create $(IMAGE):arm64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
 
 package-amd:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-amd64; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-amd64; \
 	mkdir -p $(BIN_DIR); cid=$$(docker create $(IMAGE):amd64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
 
 package-arm:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-arm64; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-arm64; \
 	mkdir -p $(BIN_DIR); cid=$$(docker create $(IMAGE):arm64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
 

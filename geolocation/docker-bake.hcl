@@ -13,7 +13,7 @@ variable "IMAGE" {
 }
 
 variable "APP_IMAGE" {
-  default = "registry.odigos.io/odigos-demo-geolocation"
+  default = "${REGISTRY}/odigos-demo-geolocation"
 }
 
 target "app" {

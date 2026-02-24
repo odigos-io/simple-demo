@@ -15,6 +15,8 @@ FORCE:
 ##################################################
 # For development
 ##################################################
+# Registry for dev builds; image is $(DEV_REGISTRY)/odigos-demo-<app>:dev
+DEV_REGISTRY := dev
 
 # Build the frontend webapp (Next.js etc.) and copy output into the Java app's
 # static resources (frontend/src/main/resources/static/). Required when running
@@ -32,11 +34,12 @@ dev-deploy-%: FORCE
 		echo "Unknown app: $*"; exit 2; \
 	fi
 	@echo "Deploying $* to Kubernetes (local arch: $(ARCH))..."
-	$(MAKE) -C $(PROJECT_DIR)$* ARCH=$(BUILD_ARCH_TARGET) TAG=dev
-	docker tag registry.odigos.io/odigos-demo-$*:dev dev/odigos-demo-$*:dev
-	kind load docker-image dev/odigos-demo-$*:dev
+	$(MAKE) -C $(PROJECT_DIR)$* $(BUILD_ARCH_TARGET) TAG=dev REGISTRY=$(DEV_REGISTRY)
+	docker tag $(DEV_REGISTRY)/odigos-demo-$*:dev dev/$*:dev
+	@echo "Loading docker image dev/$*:dev (local arch only) into kind cluster..."
+	kind load docker-image dev/$*:dev
 	kubectl apply -f $(PROJECT_DIR)$*/deployment/
-	# -kubectl rollout restart deployment $*
+	-kubectl rollout restart deployment $*
 
 # Use: make -j dev-deploy  (parallel) or make dev-deploy (sequential)
 .PHONY: dev-deploy

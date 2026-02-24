@@ -14,7 +14,7 @@ variable "IMAGE" {
 }
 
 variable "APP_IMAGE" {
-  default = "registry.odigos.io/odigos-demo-load-generator"
+  default = "${REGISTRY}/odigos-demo-load-generator"
 }
 
 target "app" {

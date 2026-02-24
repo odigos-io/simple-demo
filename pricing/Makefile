@@ -10,30 +10,30 @@ PKG_NAME   := odigos-demo-pricing
 
 # Build runtime image for all platforms (multi-arch)
 build:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl build-all
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl build-all
 
 # build-amd / build-arm: single-arch app image
 build-amd:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl app-amd64
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl app-amd64
 
 build-arm:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl app-arm64
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl app-arm64
 
 # Package: build package images (nfpm runs in Docker, one arch per image), then copy to bin/
 package:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-all; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-all; \
 	mkdir -p $(BIN_DIR); \
 	cid=$$(docker create $(IMAGE):amd64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	cid=$$(docker create $(IMAGE):arm64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
 
 package-amd:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-amd64; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-amd64; \
 	mkdir -p $(BIN_DIR); cid=$$(docker create $(IMAGE):amd64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
 
 package-arm:
-	@cd $(APP_DIR) && VERSION=$(TAG) docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-arm64; \
+	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-arm64; \
 	mkdir -p $(BIN_DIR); cid=$$(docker create $(IMAGE):arm64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \
 	chown -R $$(id -u):$$(id -g) $(BIN_DIR)
 

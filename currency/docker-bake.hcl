@@ -14,7 +14,7 @@ variable "IMAGE" {
 }
 
 variable "APP_IMAGE" {
-  default = "registry.odigos.io/odigos-demo-currency"
+  default = "${REGISTRY}/odigos-demo-currency"
 }
 
 # --- Local arch only (default) ---
