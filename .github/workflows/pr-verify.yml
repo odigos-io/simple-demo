@@ -36,7 +36,7 @@ jobs:
 
       - name: Build and package ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
-        run: make package build
+        run: make -j package-all build-all
 
       - name: Upload deb and rpm artifacts
         uses: actions/upload-artifact@v4

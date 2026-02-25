@@ -6,11 +6,26 @@ IMAGE   := load-generator-package
 APP_IMAGE := $(REGISTRY)/odigos-demo-load-generator
 PKG_NAME := odigos-demo-load-generator
 
-.PHONY: package clean build build-amd build-arm build-% package-amd package-arm package-% install install-apt install-yum uninstall uninstall-apt uninstall-yum
+# Local arch only (override with ARCH=amd64 or ARCH=arm64)
+ARCH ?= $(shell uname -m)
+BUILD_ARCH := $(if $(filter x86_64 amd64,$(ARCH)),amd,arm)
+PACKAGE_ARCH := $(BUILD_ARCH)
 
-# Build runtime image for all platforms (two single-arch builds, works with default docker driver)
-build:
-	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl build-all
+.PHONY: package clean build build-all build-amd build-arm build-% package-amd package-arm package-% install install-apt install-yum uninstall uninstall-apt uninstall-yum
+
+# Build runtime image for local arch only
+build: build-$(BUILD_ARCH)
+	@:
+
+# build-all: multi-arch image with correct manifest (docker-container driver); set PUSH=1 to push to REGISTRY.
+# Always loads the local arch into the Docker daemon so the image appears in docker images.
+build-all:
+	@docker buildx create --driver docker-container --name multibuilder --use 2>/dev/null || true; \
+	cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl \
+		$(if $(filter 1 true yes,$(PUSH)),--set "app-all.output=type=registry" --push,) \
+		app-all; \
+	cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl app-$(BUILD_ARCH)64
+	@echo "Created image: $(APP_IMAGE):$(TAG) (multi-arch, local arch loaded)"
 
 build-amd:
 	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl app-amd64
@@ -23,7 +38,12 @@ build-%:
 	target=$$(case "$$arch" in amd) echo app-amd64;; arm) echo app-arm64;; *) echo "Unknown arch: $$arch (use amd or arm)"; exit 1;; esac); \
 	cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl $$target
 
-package:
+# Package for local arch only
+package: package-$(PACKAGE_ARCH)
+	@:
+
+# package-all: both architectures (for release)
+package-all:
 	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-all; \
 	mkdir -p $(BIN_DIR); \
 	cid=$$(docker create $(IMAGE):amd64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \

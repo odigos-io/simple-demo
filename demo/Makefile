@@ -7,10 +7,14 @@ REGISTRY  ?= registry.odigos.io
 IMAGE     := demo-package
 PKG_NAME  := odigos-demo
 
-.PHONY: package clean build build-amd build-arm build-% package-amd package-arm package-% install install-apt install-yum uninstall uninstall-apt uninstall-yum
+# Local arch only (override with ARCH=amd64 or ARCH=arm64)
+ARCH ?= $(shell uname -m)
+PACKAGE_ARCH := $(if $(filter x86_64 amd64,$(ARCH)),amd,arm)
 
-# Meta-package has no app image; these targets are no-ops for compatibility with other apps
-build: package
+.PHONY: package clean build build-all build-amd build-arm package-all package-amd package-arm package-% install install-apt install-yum uninstall uninstall-apt uninstall-yum
+
+# Meta-package has no app image; build/package for local arch only
+build: package-$(PACKAGE_ARCH)
 	@:
 
 build-amd: package-amd
@@ -19,7 +23,16 @@ build-amd: package-amd
 build-arm: package-arm
 	@:
 
-package:
+# build-all is a no-op (demo has no Docker image)
+build-all:
+	@:
+
+# Package for local arch only
+package: package-$(PACKAGE_ARCH)
+	@:
+
+# package-all: both architectures (for release)
+package-all:
 	@cd $(APP_DIR) && REGISTRY="$(REGISTRY)" VERSION="$(TAG)" docker buildx bake -f docker-bake.hcl --set "*.args.VERSION=$(TAG)" package-all; \
 	mkdir -p $(BIN_DIR); \
 	cid=$$(docker create $(IMAGE):amd64); docker cp $$cid:/packages/. $(BIN_DIR)/; docker rm $$cid; \

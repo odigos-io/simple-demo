@@ -10,6 +10,9 @@ permissions:
   id-token: "write"
   packages: write
 
+env:
+  GCP_REGISTRY: us-central1-docker.pkg.dev/odigos-cloud/components
+
 jobs:
   release:
     strategy:
@@ -61,24 +64,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Build packages (both archs) and multi-arch image; image is pushed to GCP_REGISTRY when PUSH=1
       - name: Build and package ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
-        env:
-          TAG: ${{ env.TAG }}
-        run: make package build
+        run: |
+          make -j package-all build-all \
+            TAG="${{ env.TAG }}" \
+            REGISTRY="${{ env.GCP_REGISTRY }}" \
+            PUSH=1
 
-      - name: Build and Push Docker Image for ${{ matrix.service }}
-        # Demo is only a linux package
+      # Copy the multi-arch manifest list from GCP to GHCR (demo has no image)
+      - name: Tag and push multi-arch image to GitHub Container Registry
         if: matrix.service != 'demo'
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: |
-            us-central1-docker.pkg.dev/odigos-cloud/components/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
-            ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
-          platforms: linux/amd64,linux/arm64
-          file: ${{ matrix.service }}/Dockerfile
-          context: ${{ matrix.service }}
+        run: |
+          docker buildx imagetools create --tag "ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}" \
+            "${{ env.GCP_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
+          docker buildx imagetools push "ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
 
       - name: Upload Linux packages to Artifact Registry
         uses: odigos-io/ci-core/upload-linux-packages@v1.0.5
