@@ -22,7 +22,7 @@ scripts:
 overrides:
   rpm:
     depends:
-    - ruby
+    - ruby >= 3.2.0
     - rubygem-bundler
     - libyaml-devel
     contents:
@@ -32,6 +32,6 @@ overrides:
       dst: /opt/odigos-demo-geolocation
   deb:
     depends:
-    - ruby
+    - ruby (>= 3.2.0)
     - bundler
     - libyaml-dev
