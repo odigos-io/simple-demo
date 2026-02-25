@@ -27,9 +27,7 @@ jobs:
           - inventory
           - membership
           - pricing
-          # Demo is only a virtual package to allow installing and uninstalling the entire simple demo in a single command.
-          - demo
-    runs-on: depot-ubuntu-24.04-4
+    runs-on: depot-ubuntu-24.04-8
     steps:
       - name: Store new version in env
         run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
@@ -81,6 +79,7 @@ jobs:
             "${{ env.GCP_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
 
       - name: Upload Linux packages to Artifact Registry
+        if: matrix.service != 'demo'
         uses: odigos-io/ci-core/upload-linux-packages@v1.0.5
         with:
           gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
@@ -88,3 +87,53 @@ jobs:
           gcp-service-account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           package-directory: ${{ matrix.service }}/bin
           repository: 'odigos'
+
+      - name: Upload deb artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.service }}-deb
+          path: ${{ matrix.service }}/bin/*.deb
+
+      - name: Upload rpm artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.service }}-rpm
+          path: ${{ matrix.service }}/bin/*.rpm
+
+  # Demo must be uploaded after all other apps so it can depend on them in the repo
+  upload-demo-packages:
+    needs: release
+    runs-on: depot-ubuntu-24.04-2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build demo meta-package
+        working-directory: demo
+        run: |
+          make package-all TAG="${{ github.ref_name }}"
+
+      - name: Upload demo Linux packages to Artifact Registry
+        uses: odigos-io/ci-core/upload-linux-packages@v1.0.5
+        with:
+          gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
+          gcp-workload-identity-provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp-service-account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          package-directory: demo/bin
+          repository: 'odigos'
+
+      - name: Upload demo deb artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-demo-deb
+          path: demo/bin/*.deb
+
+      - name: Upload demo rpm artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-demo-rpm
+          path: demo/bin/*.rpm
