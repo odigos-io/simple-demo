@@ -23,7 +23,8 @@ overrides:
   rpm:
     depends:
     - ruby
-    - ruby-bundler
+    - rubygem-bundler
+    - libyaml-devel
     contents:
     - src: distribution/systemd.service
       dst: /lib/systemd/system/odigos-demo-geolocation.service
@@ -33,3 +34,4 @@ overrides:
     depends:
     - ruby
     - bundler
+    - libyaml-dev

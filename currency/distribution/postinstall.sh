@@ -1,3 +1,10 @@
+# 0) On RHEL/Fedora there is no www-data; use nginx for PHP-FPM pool user
+if ! getent passwd www-data >/dev/null 2>&1; then
+  for f in /etc/odigos-demo-currency/php-fpm.conf; do
+    [ -f "$f" ] && sed -i 's/ = www-data$/ = nginx/g' "$f"
+  done
+fi
+
 # 1) If nginx is installed, enable our vhost and reload
 if [ -d /etc/nginx/sites-available ]; then
   rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true

@@ -7,6 +7,7 @@ Type=simple
 User=odigos
 Group=odigos
 WorkingDirectory=/opt/odigos-demo-geolocation
+Environment="HOME=/opt/odigos-demo-geolocation/.home"
 ; Rails
 Environment="RAILS_ENV=production"
 Environment="RAILS_MASTER_KEY=df0300c20246e24d331787f6540a72fa"
