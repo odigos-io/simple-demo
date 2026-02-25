@@ -24,7 +24,6 @@ overrides:
     depends:
     - ruby >= 3.2.0
     - rubygem-bundler
-    - libyaml-devel
     contents:
     - src: distribution/systemd.service
       dst: /lib/systemd/system/odigos-demo-geolocation.service
