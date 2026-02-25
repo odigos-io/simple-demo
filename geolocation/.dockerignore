@@ -43,3 +43,11 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# Packaging and deployment (package stage copies distribution/ and nfpm.yaml from context)
+/deployment/
+/Makefile
+/docker-bake.hcl
+/README.md
+# Build artifacts (packages go here; do not copy into image)
+/bin/

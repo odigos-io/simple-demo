@@ -1,1 +1,25 @@
-vendor
+# Composer
+/vendor/
+composer.phar
+
+# Build and package output
+/bin/
+/dist/
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# PHP
+*.log
+.phpunit.result.cache
+.phpunit.cache/
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

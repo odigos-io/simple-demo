@@ -1,0 +1,25 @@
+[Unit]
+Description=Odigos Demo Currency (PHP-FPM app)
+Documentation=https://odigos.io
+After=network.target
+
+[Service]
+Type=simple
+# Ensure /run/php exists so PHP-FPM can create the socket (for nginx or other reverse proxy)
+RuntimeDirectory=php
+RuntimeDirectoryMode=0755
+WorkingDirectory=/opt/odigos-demo-currency
+# Start PHP-FPM with our pool config (binary from package dep: php-fpm on rpm)
+ExecStart=/usr/sbin/php-fpm --nodaemonize -y /etc/odigos-demo-currency/php-fpm.conf
+# Log to journal (journalctl -u odigos-demo-currency.service)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=odigos-demo-currency
+KillMode=mixed
+Restart=on-failure
+RestartSec=1
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="GEOLOCATION_SERVICE_HOST=localhost:8086"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,16 +1,40 @@
 #!/usr/bin/env bash
 set -e
 
-APP=/opt/odigos-demo-geolocation/embedded-ruby
+chown -R odigos:odigos /opt/odigos-demo-geolocation
+chmod +x /opt/odigos-demo-geolocation/binaries/*
 
-# --- make Ruby’s original prefix visible -------------------------------
-ln -sfn "${APP}/bin"  /usr/local/bin
-ln -sfn "${APP}/lib"  /usr/local/lib
-ln -sfn "${APP}/lib/ruby" /usr/local/lib/ruby
+# Install gems for the host's Ruby (package does not ship vendor/bundle; avoids Ruby version mismatch)
+if command -v bundle >/dev/null 2>&1; then
+  (
+    cd /opt/odigos-demo-geolocation
+    mkdir -p /opt/odigos-demo-geolocation/vendor/bundle
+    chown odigos:odigos /opt/odigos-demo-geolocation/vendor/bundle
+    export BUNDLE_GEMFILE=/opt/odigos-demo-geolocation/Gemfile
+    export BUNDLE_PATH=/opt/odigos-demo-geolocation/vendor/bundle
+    export GEM_HOME=/opt/odigos-demo-geolocation/vendor/bundle
+    export GEM_PATH=/opt/odigos-demo-geolocation/vendor/bundle
+    export BUNDLE_DEPLOYMENT=1
+    export BUNDLE_WITHOUT=development:test
+    # Install Bundler 2.6 into app's vendor/bundle so the service (GEM_PATH=vendor/bundle) finds it
+    sudo -u odigos env GEM_HOME="$BUNDLE_PATH" GEM_PATH="$BUNDLE_PATH" gem install bundler -v '~> 2.6' --no-document
+    sudo -u odigos env BUNDLE_GEMFILE="$BUNDLE_GEMFILE" BUNDLE_PATH="$BUNDLE_PATH" \
+      GEM_HOME="$BUNDLE_PATH" GEM_PATH="$BUNDLE_PATH" \
+      BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development:test \
+      bundle config set --local deployment true
+    sudo -u odigos env BUNDLE_GEMFILE="$BUNDLE_GEMFILE" BUNDLE_PATH="$BUNDLE_PATH" \
+      GEM_HOME="$BUNDLE_PATH" GEM_PATH="$BUNDLE_PATH" \
+      BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development:test \
+      bundle config set --local without 'development test'
+    sudo -u odigos env BUNDLE_GEMFILE="$BUNDLE_GEMFILE" BUNDLE_PATH="$BUNDLE_PATH" \
+      GEM_HOME="$BUNDLE_PATH" GEM_PATH="$BUNDLE_PATH" \
+      BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development:test \
+      bundle install
+  )
+fi
 
-# create a harmless home so Bundler stops warning
-mkdir -p /home/odigos
-chown odigos:odigos /home/odigos
-
-# reload unit files on upgrade
-command -v systemctl >/dev/null && systemctl daemon-reload
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl daemon-reload
+  systemctl enable odigos-demo-geolocation.service
+  systemctl start odigos-demo-geolocation.service
+fi

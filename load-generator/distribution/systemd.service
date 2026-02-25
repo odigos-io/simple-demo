@@ -1,0 +1,18 @@
+[Unit]
+Description=Odigos Demo Load Generator (disabled by default; start via systemd or run binary directly)
+After=network.target
+
+[Service]
+Type=simple
+User=odigos
+Group=odigos
+ExecStart=/usr/bin/odigos-demo-load-generator
+KillMode=mixed
+Restart=on-failure
+RestartSec=5
+Environment="FRONTEND_SERVICE_HOST=localhost:8080"
+Environment="LOAD_GENERATOR_MAX_ITERATIONS=10"
+Environment="LOAD_GENERATOR_DELAY_SECONDS=3"
+
+[Install]
+WantedBy=multi-user.target

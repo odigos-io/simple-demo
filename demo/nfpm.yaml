@@ -1,0 +1,42 @@
+# Meta-package: installs all Odigos demo apps as dependencies.
+# Version is the dependency version for every demo app (install odigos-demo = install all at this version).
+name: odigos-demo
+arch: ${TARGETARCH}
+platform: linux
+version: ${VERSION}
+section: default
+priority: extra
+maintainer: Odigos <info@odigos.io>
+vendor: Odigos
+homepage: https://odigos.io
+description: |
+  Meta-package that installs all Odigos demo applications (membership, pricing,
+  currency, frontend, geolocation, inventory, coupon, load-generator).
+  systemctl start odigos-demo  → start all services except load-generator
+  systemctl stop odigos-demo   → stop all services including load-generator
+depends:
+  - odigos-demo-membership (= ${VERSION})
+  - odigos-demo-pricing (= ${VERSION})
+  - odigos-demo-currency (= ${VERSION})
+  - odigos-demo-frontend (= ${VERSION})
+  - odigos-demo-geolocation (= ${VERSION})
+  - odigos-demo-inventory (= ${VERSION})
+  - odigos-demo-coupon (= ${VERSION})
+  - odigos-demo-load-generator (= ${VERSION})
+contents:
+- src: distribution/systemd.service
+  dst: /lib/systemd/system/odigos-demo.service
+scripts:
+  postinstall: ./distribution/postinstall.sh
+  preremove: ./distribution/preremove.sh
+overrides:
+  rpm:
+    depends:
+    - "odigos-demo-membership = ${VERSION}"
+    - "odigos-demo-pricing = ${VERSION}"
+    - "odigos-demo-currency = ${VERSION}"
+    - "odigos-demo-frontend = ${VERSION}"
+    - "odigos-demo-geolocation = ${VERSION}"
+    - "odigos-demo-inventory = ${VERSION}"
+    - "odigos-demo-coupon = ${VERSION}"
+    - "odigos-demo-load-generator = ${VERSION}"

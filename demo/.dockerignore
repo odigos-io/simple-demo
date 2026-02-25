@@ -1,0 +1,20 @@
+# Git and IDE
+.git
+.gitignore
+*.swp
+*~
+.DS_Store
+.idea
+.vscode
+
+# Build artifacts / package output (do not copy into image)
+/bin/
+/dist/
+
+# CI / docs (not needed in image)
+.github
+README.md
+Makefile
+docker-bake.hcl
+.dockerignore
+

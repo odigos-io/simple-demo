@@ -1,0 +1,22 @@
+name: odigos-demo-load-generator
+arch: ${TARGETARCH}
+platform: linux
+version: ${VERSION}
+section: default
+priority: extra
+maintainer: Odigos <info@odigos.io>
+vendor: Odigos
+homepage: https://odigos.io
+description: |
+  Odigos demo load generator. Installed disabled by default.
+  Start via systemd (systemctl enable --now odigos-demo-load-generator.service)
+  or run the binary directly: odigos-demo-load-generator
+contents:
+- src: distribution/systemd.service
+  dst: /lib/systemd/system/odigos-demo-load-generator.service
+- src: ./dist/app
+  dst: /usr/bin
+scripts:
+  preinstall: ./distribution/preinstall.sh
+  postinstall: ./distribution/postinstall.sh
+  preremove: ./distribution/preremove.sh

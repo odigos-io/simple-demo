@@ -1,7 +1,8 @@
 name: odigos-demo-inventory
-arch: all
+# arch/version set by Docker build args (TARGETARCH, VERSION) in package stage
+arch: ${TARGETARCH}
 platform: linux
-version: 1.0.0
+version: ${VERSION}
 section: default
 priority: extra
 maintainer: Odigos

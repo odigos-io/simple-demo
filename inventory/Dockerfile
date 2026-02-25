@@ -1,58 +1,52 @@
-# Stage 1: Build Stage
-FROM python:3.11 AS builder
+# --- Build nfpm binary (for package stage) ---
+FROM golang:1.22-alpine AS nfpm-build
+RUN go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.34.0
 
-# Set environment variables for Python and prevent writing .pyc files
+# --- Common build: one poetry install for both app and package ---
+FROM python:3.11-slim AS builder
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-
-# Install system dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    gcc \
-    libpq-dev \
+    && apt-get install -y --no-install-recommends gcc libpq-dev \
     && rm -rf /var/lib/apt/lists/*
-
-# Create and set the working directory
-WORKDIR /app
-
-# Copy only the poetry files to the working directory
-COPY poetry.lock pyproject.toml README.md /app/
-
-COPY inventory/ /app/inventory
-
-# Install Poetry with specific version to avoid compatibility issues
-RUN pip install poetry==1.7.1
-
-# Configure Poetry and install dependencies with increased timeout
-RUN poetry config virtualenvs.create false \
+WORKDIR /workspace
+COPY . .
+RUN pip install --no-cache-dir poetry==1.7.1 \
+    && poetry config virtualenvs.create false \
     && poetry config installer.max-workers 1 \
     && poetry install --no-interaction --no-ansi
 
-# Stage 2: Runtime Stage
-FROM python:3.11-slim
-
-# Set environment variables for Python and prevent writing .pyc files
+# --- Runtime image ---
+FROM python:3.11-slim AS app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-
-# Install runtime dependencies
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    libpq5 \
+    && apt-get install -y --no-install-recommends libpq5 \
     && rm -rf /var/lib/apt/lists/*
-
-# Create and set the working directory
 WORKDIR /app
-
-# Copy only the necessary files from the builder stage
-COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /app /app
-
-# Expose the port that the application will run on
-EXPOSE 8080
-
-# Set correct PYTHONPATH
+COPY --from=builder /workspace /app
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 ENV PYTHONPATH=/app
-
-# Command to run the application
+EXPOSE 8080
 CMD ["python", "inventory/main.py"]
+
+# --- Package stage: arch from docker --platform (TARGETARCH); one image per arch ---
+FROM python:3.11-slim AS package
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=nfpm-build /go/bin/nfpm /usr/local/bin/nfpm
+WORKDIR /workspace
+COPY --from=builder /workspace /workspace
+RUN mkdir -p dist/app
+COPY --from=builder /workspace/inventory dist/app/
+COPY --from=builder /workspace/pyproject.toml /workspace/poetry.lock /workspace/README.md dist/app/
+COPY --from=builder /usr/local/lib/python3.11/site-packages dist/app/site-packages
+ARG TARGETARCH
+ARG VERSION=dev
+ENV VERSION=$VERSION
+ENV TARGETARCH=$TARGETARCH
+RUN mkdir -p /packages && \
+    nfpm pkg --packager rpm --target /packages && \
+    nfpm pkg --packager deb --target /packages
+CMD ["true"]

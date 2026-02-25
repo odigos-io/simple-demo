@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl stop odigos-demo-load-generator.service || true
+  systemctl disable odigos-demo-load-generator.service || true
+fi

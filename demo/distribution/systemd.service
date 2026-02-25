@@ -1,0 +1,14 @@
+[Unit]
+Description=Odigos Demo - all services (start: all except load-generator; stop: all including load-generator)
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Start: all demo services except load-generator (load-generator stays disabled by default)
+ExecStart=/bin/sh -c 'systemctl start odigos-demo-membership.service odigos-demo-pricing.service odigos-demo-currency.service odigos-demo-frontend.service odigos-demo-geolocation.service odigos-demo-inventory.service odigos-demo-coupon.service 2>/dev/null || true'
+# Stop: all demo services including load-generator
+ExecStop=/bin/sh -c 'systemctl stop odigos-demo-load-generator.service odigos-demo-membership.service odigos-demo-pricing.service odigos-demo-currency.service odigos-demo-frontend.service odigos-demo-geolocation.service odigos-demo-inventory.service odigos-demo-coupon.service 2>/dev/null || true'
+
+[Install]
+WantedBy=multi-user.target

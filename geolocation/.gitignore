@@ -1,0 +1,29 @@
+# Build and package artifacts (make package outputs .deb/.rpm here)
+/bin/
+/dist/
+
+# Bundler
+/.bundle/
+/vendor/bundle/
+
+# Logs and temp
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Storage and DBs
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+
+# Env and secrets
+/.env*
+/config/master.key
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

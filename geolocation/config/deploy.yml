@@ -11,7 +11,7 @@ servers:
   # job:
   #   hosts:
   #     - 192.168.0.1
-  #   cmd: bin/jobs
+  #   cmd: binaries/jobs
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
@@ -53,13 +53,13 @@ env:
     # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
 
-# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
-# "bin/kamal logs -r job" will tail logs from the first server in the job section.
+# Aliases are triggered with "binaries/kamal <alias>". You can overwrite arguments on invocation:
+# "binaries/kamal logs -r job" will tail logs from the first server in the job section.
 aliases:
-  console: app exec --interactive --reuse "bin/rails console"
+  console: app exec --interactive --reuse "binaries/rails console"
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
-  dbc: app exec --interactive --reuse "bin/rails dbconsole"
+  dbc: app exec --interactive --reuse "binaries/rails dbconsole"
 
 
 # Use a persistent storage volume for sqlite database files and local Active Storage files.

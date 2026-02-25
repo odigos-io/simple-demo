@@ -1,7 +1,8 @@
 name: odigos-demo-coupon
-arch: all
+# Set via env at build time (VERSION, TARGETARCH from Docker build args)
+arch: ${TARGETARCH}
 platform: linux
-version: 1.0.0
+version: ${VERSION}
 section: default
 priority: extra
 maintainer: Odigos
@@ -11,7 +12,6 @@ vendor: Odigos
 homepage: https://odigos.io
 depends:
 - nodejs
-- odigos-demo-membership
 contents:
 - src: distribution/systemd.service
   dst: /lib/systemd/system/odigos-demo-coupon.service

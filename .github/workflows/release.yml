@@ -10,20 +10,26 @@ permissions:
   id-token: "write"
   packages: write
 
+env:
+  GCP_REGISTRY: us-central1-docker.pkg.dev/odigos-cloud/components
+
 jobs:
-  publish-docker-images:
+  release:
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - service: load-generator
-          - service: coupon
-          - service: currency
-          - service: frontend
-          - service: geolocation
-          - service: inventory
-          - service: membership
-          - service: pricing
-    runs-on: ubuntu-latest
+        service:
+          - load-generator
+          - coupon
+          - currency
+          - frontend
+          - geolocation
+          - inventory
+          - membership
+          - pricing
+          # Demo is only a virtual package to allow installing and uninstalling the entire simple demo in a single command.
+          - demo
+    runs-on: depot-ubuntu-24.04-4
     steps:
       - name: Store new version in env
         run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
@@ -34,9 +40,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - id: gcp-auth
         name: Authenticate with Google Cloud
@@ -61,135 +64,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Docker Image for ${{ matrix.service }}
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: |
-            us-central1-docker.pkg.dev/odigos-cloud/components/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
-            ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}
-          platforms: linux/amd64,linux/arm64
-          file: ${{ matrix.service }}/Dockerfile
-          context: ${{ matrix.service }}
-
-  ######################
-  ####  MEMBERSHIP  ####
-  ######################
-  membership:
-    runs-on:
-      labels: ubuntu-latest
-    steps:
-      - name: Store new version in env
-        run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ env.TAG }}
-
-      - name: Set env
-        id: vars
-        run: |
-          SHORT_COMMIT=$(git rev-parse --short HEAD)
-          echo "short_commit=${SHORT_COMMIT}" >> $GITHUB_ENV
-
-      - name: Install GemFury CLI
-        run: |
-          sudo bash -c "echo 'deb [trusted=yes] https://apt.fury.io/cli/ * *' > /etc/apt/sources.list.d/fury-cli.list"
-          sudo apt-get update
-          sudo apt-get install -y fury-cli
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.22"
-
-      - name: Release Membership Linux Package
-        uses: goreleaser/goreleaser-action@v5
-        with:
-          distribution: goreleaser
-          version: latest
-          args: release --clean
-          workdir: membership
-        env:
-          FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
-          FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  ##############################
-  ####  Linux pkg via NPFM  ####
-  ##############################
-  linux-pkg:
-    strategy:
-      matrix:
-        include:
-          - service: coupon
-            arch: amd64
-            pkg_arch: all
-          - service: currency
-            arch: amd64
-            pkg_arch: all
-          - service: frontend
-            arch: amd64
-            pkg_arch: all
-          - service: geolocation
-            arch: amd64
-            pkg_arch: all
-          - service: inventory
-            arch: amd64
-            pkg_arch: all
-          - service: pricing
-            arch: amd64
-            pkg_arch: amd64
-          - service: pricing
-            arch: arm64
-            pkg_arch: arm64
-    runs-on:
-      labels: ubuntu-latest
-    steps:
-      - name: Store new version in env
-        run: echo "TAG=${GITHUB_REF##refs/*/}" >> $GITHUB_ENV
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ env.TAG }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Install GemFury CLI
-        run: |
-          sudo bash -c "echo 'deb [trusted=yes] https://apt.fury.io/cli/ * *' > /etc/apt/sources.list.d/fury-cli.list"
-          sudo apt-get update
-          sudo apt-get install -y fury-cli
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.22"
-
-      - name: Install nfpm
-        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
-
-      - name: Release
+      # Build packages (both archs) and multi-arch image; image is pushed to GCP_REGISTRY when PUSH=1
+      - name: Build and package ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
-        env:
-          FURY_ACCOUNT: ${{ secrets.FURY_ACCOUNT }}
-          FURY_API_TOKEN: ${{ secrets.FURY_API_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          docker buildx build --load --platform=linux/${{ matrix.arch }} -t ${{ matrix.service }} .
-          docker create --name tc ${{ matrix.service }}
-          mkdir -p ./dist
-          sh ./distribution/copy-assets.sh
-          docker rm tc
-          sed -i -E 's/version: .*$/version: '"${TAG}"'/' nfpm.yaml
-          sed -i -E 's/arch: .*$/arch: '"${{ matrix.pkg_arch }}"'/' nfpm.yaml
-          nfpm pkg --packager rpm --target dist/
-          nfpm pkg --packager deb --target dist/
-          fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.rpm
-          fury push --public --account $FURY_ACCOUNT --api-token $FURY_API_TOKEN dist/*.deb
+          make -j package-all build-all \
+            TAG="${{ env.TAG }}" \
+            REGISTRY="${{ env.GCP_REGISTRY }}" \
+            PUSH=1
+
+      # Copy the multi-arch manifest list from GCP to GHCR (demo has no image)
+      - name: Tag and push multi-arch image to GitHub Container Registry
+        if: matrix.service != 'demo'
+        run: |
+          docker buildx imagetools create --tag "ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}" \
+            "${{ env.GCP_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
+          docker buildx imagetools push "ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
+
+      - name: Upload Linux packages to Artifact Registry
+        uses: odigos-io/ci-core/upload-linux-packages@v1.0.5
+        with:
+          gcp-project-id: ${{ secrets.GCP_PROJECT_ID }}
+          gcp-workload-identity-provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp-service-account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          package-directory: ${{ matrix.service }}/bin
+          repository: 'odigos'
