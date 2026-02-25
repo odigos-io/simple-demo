@@ -4,8 +4,13 @@ set -e
 chown -R odigos:odigos /opt/odigos-demo-geolocation
 chmod +x /opt/odigos-demo-geolocation/binaries/*
 
-# Install gems for the host's Ruby (package does not ship vendor/bundle; avoids Ruby version mismatch)
-if command -v bundle >/dev/null 2>&1; then
+# Use vendored bundle if present (Ruby 3.3; same on RHEL and Ubuntu, no dev packages on target)
+NEED_BUNDLE_INSTALL=
+if [ ! -d /opt/odigos-demo-geolocation/vendor/bundle/ruby/3.3.0/gems/rails ]; then
+  NEED_BUNDLE_INSTALL=1
+fi
+
+if [ -n "$NEED_BUNDLE_INSTALL" ] && command -v bundle >/dev/null 2>&1; then
   (
     cd /opt/odigos-demo-geolocation
     mkdir -p /opt/odigos-demo-geolocation/vendor/bundle
