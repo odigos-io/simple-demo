@@ -32,7 +32,8 @@ overrides:
     - src: ./dist/app
       dst: /opt/odigos-demo-geolocation
   deb:
-    # Ubuntu: vendored bundle; need only ruby >= 3.3 and bundler (e.g. ruby3.3 from distro or deadsnakes)
+    # need only ruby >= 3.3 and bundler (e.g. ruby3.3 from distro or deadsnakes)
     depends:
     - ruby (>= 3.3.0)
     - bundler
+    - libyaml-dev
