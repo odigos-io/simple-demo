@@ -22,7 +22,7 @@ scripts:
 overrides:
   rpm:
     depends:
-    - java-17-openjdk-headless
+    - java-headless
   deb:
     depends:
     - openjdk-17-jre-headless
