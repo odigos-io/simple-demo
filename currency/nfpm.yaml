@@ -30,8 +30,8 @@ scripts:
 overrides:
   rpm:
     depends:
-    - php-cli
-    - php-fpm
+    - php-cli >= 8.3
+    - php-fpm >= 8.3
     - nginx
     contents:
     - src: distribution/systemd.service.rpm
@@ -44,6 +44,8 @@ overrides:
       dst: /etc/odigos-demo-currency/odigos-demo-currency.nginx.conf
     - src: distribution/disable-www.conf
       dst: /etc/odigos-demo-currency/disable-www.conf
+    - src: distribution/nginx-service-dropin.conf
+      dst: /etc/systemd/system/nginx.service.d/odigos-demo-currency.conf
   deb:
     depends:
     - php-cli (>= 8.3)

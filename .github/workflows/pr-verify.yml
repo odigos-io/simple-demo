@@ -38,9 +38,14 @@ jobs:
         working-directory: ${{ matrix.service }}
         run: make -j package-all build-all
 
-      - name: Upload deb and rpm artifacts
+      - name: Upload deb artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: packages-${{ matrix.service }}
-          path: ${{ matrix.service }}/bin/
-          include-hidden-files: false
+          name: packages-${{ matrix.service }}-deb
+          path: ${{ matrix.service }}/bin/*.deb
+
+      - name: Upload rpm artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.service }}-rpm
+          path: ${{ matrix.service }}/bin/*.rpm

@@ -12,5 +12,9 @@ ARG TARGETARCH
 ARG VERSION=dev
 ENV TARGETARCH=$TARGETARCH
 ENV VERSION=$VERSION
-RUN nfpm pkg --packager rpm --target /packages && nfpm pkg --packager deb --target /packages
+# Debian version must start with a digit; strip tag prefix "v" (e.g. v0.0.12 -> 0.0.12)
+RUN VERSION="${VERSION#v}" \
+ && export VERSION \
+ && nfpm pkg --packager rpm --target /packages \
+ && nfpm pkg --packager deb --target /packages
 CMD ["true"]

@@ -15,13 +15,22 @@ for unit in $(systemctl list-units --type=service --all \
   systemctl try-reload-or-restart "$unit" || true
 done
 
-# Remove nginx site and reload (only if nginx is installed)
+# Remove nginx site and reload (Debian: sites-*; RHEL: conf.d)
 if [ -d /etc/nginx/sites-enabled ]; then
   rm -f /etc/nginx/sites-enabled/odigos-demo-currency.conf 2>/dev/null || true
   rm -f /etc/nginx/sites-available/odigos-demo-currency.conf 2>/dev/null || true
   systemctl reload nginx 2>/dev/null || true
 fi
+if [ -d /etc/nginx/conf.d ]; then
+  rm -f /etc/nginx/conf.d/odigos-demo-currency.conf 2>/dev/null || true
+  systemctl reload nginx 2>/dev/null || true
+fi
 
+# Remove nginx service drop-in (RPM: run as root for port 8085)
+rm -f /etc/systemd/system/nginx.service.d/odigos-demo-currency.conf 2>/dev/null || true
+rmdir /etc/systemd/system/nginx.service.d 2>/dev/null || true
+systemctl daemon-reload 2>/dev/null || true
+systemctl try-restart nginx 2>/dev/null || true
 
 PHP_VER=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')
 if [ -f "/etc/php/${PHP_VER}/fpm/pool.d/www.conf.disabled" ]; then
