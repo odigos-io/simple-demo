@@ -118,3 +118,20 @@ prod-deploy:
 		echo "Building $$app..."; \
 		$(MAKE) -C $(PROJECT_DIR)$$app build TAG="$(VERSION)" ARCH="$(ARCH)"; \
 	done
+
+
+##################################################
+# Grooming
+##################################################
+.PHONY: clean
+
+clean: $(addprefix clean-,$(PACKAGE_APPS))
+	@echo "Cleaning all..."
+	@:
+
+clean-%: FORCE
+	@if ! echo " $(PACKAGE_APPS) " | grep -q " $* "; then \
+		echo "Unknown app: $*"; exit 2; \
+	fi
+	@echo "Cleaning $*..."
+	$(MAKE) -C "$(PROJECT_DIR)$*" clean TAG="$(VERSION)"

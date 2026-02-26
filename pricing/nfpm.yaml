@@ -1,5 +1,4 @@
 name: odigos-demo-pricing
-# arch/version set by Docker build args (TARGETARCH, VERSION) in package stage
 arch: ${TARGETARCH}
 platform: linux
 version: ${VERSION}
