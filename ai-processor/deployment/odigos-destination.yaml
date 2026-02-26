@@ -1,0 +1,12 @@
+apiVersion: odigos.io/v1alpha1
+kind: Destination
+metadata:
+  name: ai-processor
+  namespace: odigos-system
+spec:
+  type: otlp
+  destinationName: ai-processor
+  signals:
+    - TRACES
+  data:
+    OTLP_GRPC_ENDPOINT: "ai-processor.default.svc.cluster.local:4317"
