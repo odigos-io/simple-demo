@@ -32,7 +32,6 @@ overrides:
     - php-cli
     - php-fpm
     - nginx
-    - policycoreutils-python3-utils
     contents:
     - src: distribution/systemd.service.rpm
       dst: /lib/systemd/system/odigos-demo-currency.service
