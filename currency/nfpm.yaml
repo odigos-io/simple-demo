@@ -1,4 +1,5 @@
 name: odigos-demo-currency
+# arch/version set by Docker build args (TARGETARCH, VERSION) in package stage
 arch: ${TARGETARCH}
 platform: linux
 version: ${VERSION}
@@ -29,8 +30,8 @@ scripts:
 overrides:
   rpm:
     depends:
-    - php-cli
-    - php-fpm
+    - php-cli >= 8.3
+    - php-fpm >= 8.3
     - nginx
     contents:
     - src: distribution/systemd.service.rpm

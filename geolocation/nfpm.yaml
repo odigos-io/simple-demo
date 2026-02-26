@@ -1,5 +1,6 @@
-# Same vendored Ruby 3.3 bundle in .rpm (RHEL) and .deb (Ubuntu); no dev packages on target
 name: odigos-demo-geolocation
+# Same vendored Ruby 3.3 bundle in .rpm (RHEL) and .deb (Ubuntu); no dev packages on target
+# arch/version set by Docker build args (TARGETARCH, VERSION) in package stage
 arch: ${TARGETARCH}
 platform: linux
 version: ${VERSION}
@@ -21,22 +22,18 @@ scripts:
   preremove: ./distribution/preremove.sh
 overrides:
   rpm:
+    # RHEL: vendored bundle; need only ruby >= 3.3 and rubygem-bundler (e.g. ruby:3.3 module)
     depends:
-    - ruby
+    - ruby >= 3.3.0
     - rubygem-bundler
-    - libyaml-devel
     contents:
     - src: distribution/systemd.service
       dst: /lib/systemd/system/odigos-demo-geolocation.service
     - src: ./dist/app
       dst: /opt/odigos-demo-geolocation
   deb:
+    # need only ruby >= 3.3 and bundler (e.g. ruby3.3 from distro or deadsnakes)
     depends:
     - ruby (>= 3.3.0)
     - bundler
     - libyaml-dev
-    contents:
-    - src: distribution/systemd.service
-      dst: /lib/systemd/system/odigos-demo-geolocation.service
-    - src: ./dist/app
-      dst: /opt/odigos-demo-geolocation
