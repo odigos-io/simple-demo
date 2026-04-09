@@ -15,6 +15,7 @@ services:
       COUPON_SERVICE_HOST: coupon:8084
       CURRENCY_SERVICE_HOST: nginx:8085
       GEOLOCATION_SERVICE_HOST: geolocation:8086
+      SHIPPING_SERVICE_HOST: shipping:8087
   membership:
     build:
       context: ./membership
@@ -87,3 +88,10 @@ services:
     environment:
       PORT: 8086
       RAILS_MASTER_KEY: df0300c20246e24d331787f6540a72fa
+  shipping:
+    build:
+      context: ./shipping
+    ports:
+      - '8087:8087'
+    environment:
+      PORT: 8087

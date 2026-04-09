@@ -173,6 +173,8 @@ spec:
               value: currency:8080
             - name: GEOLOCATION_SERVICE_HOST
               value: geolocation:8080
+            - name: SHIPPING_SERVICE_HOST
+              value: shipping:8080
           ports:
             - containerPort: 8080
 ---
@@ -183,6 +185,47 @@ metadata:
 spec:
   selector:
     app: frontend
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+##################################################
+# Shipping (C++)
+##################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping
+  labels:
+    app: shipping
+spec:
+  selector:
+    matchLabels:
+      app: shipping
+  template:
+    metadata:
+      labels:
+        app: shipping
+    spec:
+      containers:
+        - name: shipping
+          image: registry.odigos.io/odigos-demo-shipping:v0.1.35
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: shipping
+spec:
+  selector:
+    app: shipping
   ports:
     - protocol: TCP
       port: 8080

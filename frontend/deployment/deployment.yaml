@@ -27,5 +27,7 @@ spec:
               value: currency:8080
             - name: GEOLOCATION_SERVICE_HOST
               value: geolocation:8080
+            - name: SHIPPING_SERVICE_HOST
+              value: shipping:8080
           ports:
             - containerPort: 8080

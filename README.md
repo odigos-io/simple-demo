@@ -20,6 +20,7 @@ Simple Demo contains the following services:
 | Inventory      | Python          | 3.11                 |
 | Membership     | Go              | 1.21                 |
 | Pricing        | .NET            | 8.0                  |
+| Shipping       | C++             | 17 (GCC)             |
 
 ## Running locally
 

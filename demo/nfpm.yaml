@@ -11,7 +11,7 @@ vendor: Odigos
 homepage: https://odigos.io
 description: |
   Meta-package that installs all Odigos demo applications (membership, pricing,
-  currency, frontend, geolocation, inventory, coupon, load-generator).
+  currency, frontend, geolocation, inventory,   coupon, shipping, load-generator).
   systemctl start odigos-demo  → start all services except load-generator
   systemctl stop odigos-demo   → stop all services including load-generator
 depends:
@@ -22,6 +22,7 @@ depends:
   - odigos-demo-geolocation (= ${VERSION})
   - odigos-demo-inventory (= ${VERSION})
   - odigos-demo-coupon (= ${VERSION})
+  - odigos-demo-shipping (= ${VERSION})
   - odigos-demo-load-generator (= ${VERSION})
 contents:
 - src: distribution/systemd.service
@@ -39,4 +40,5 @@ overrides:
     - "odigos-demo-geolocation = ${VERSION}"
     - "odigos-demo-inventory = ${VERSION}"
     - "odigos-demo-coupon = ${VERSION}"
+    - "odigos-demo-shipping = ${VERSION}"
     - "odigos-demo-load-generator = ${VERSION}"
