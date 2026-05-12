@@ -13,6 +13,7 @@ public class ProductController {
     private final InventoryService inventoryService;
     private final PricingService pricingService;
     private final CouponService couponService;
+    private final ShippingService shippingService;
 
     @Autowired
     public ProductController(
@@ -20,12 +21,14 @@ public class ProductController {
             GeoService geoService,
             InventoryService inventoryService,
             PricingService pricingService,
-            CouponService couponService) {
+            CouponService couponService,
+            ShippingService shippingService) {
         this.currencyService = currencyService;
         this.geoService = geoService;
         this.inventoryService = inventoryService;
         this.pricingService = pricingService;
         this.couponService = couponService;
+        this.shippingService = shippingService;
     }
 
     @CrossOrigin(origins = "*")
@@ -44,9 +47,13 @@ public class ProductController {
     public List<Product> getProducts() {
         List<Product> products = this.inventoryService.getInventory();
 
-        // Add price to every product
+        // Add price and shipping quote to every product
         for (Product product : products) {
             product.setPrice(this.pricingService.getPrice(product.getId()));
+            ShippingQuoteResult quote = this.shippingService.getQuote(product.getId());
+            if (quote != null) {
+                product.setShippingCents(quote.getShippingCents());
+            }
         }
 
         // Get coupons
@@ -65,6 +72,12 @@ public class ProductController {
 
         // Validate price via pricing service
         double price = this.pricingService.getPrice(id);
+
+        ShippingQuoteResult shipping = this.shippingService.getQuote(id);
+        if (shipping != null) {
+            System.out.println("Shipping quote for buy id " + id + ": " + shipping.getShippingCents()
+                    + " cents via " + shipping.getCarrier());
+        }
 
         String currencyPair = "usd-eur";
         CurrencyResult currencyInfo = this.currencyService.getCurrencyInfo(currencyPair);

@@ -27,6 +27,7 @@ jobs:
           - inventory
           - membership
           - pricing
+          - shipping
     runs-on: depot-ubuntu-24.04-8
     steps:
       - name: Store new version in env

@@ -10,6 +10,7 @@ type Product = {
   name: string
   price: number
   image: string
+  shippingCents?: number
 }
 
 export default function Home() {

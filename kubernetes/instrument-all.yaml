@@ -74,3 +74,14 @@ spec:
     kind: Deployment
     name: pricing
     namespace: default
+---
+apiVersion: odigos.io/v1alpha1
+kind: Source
+metadata:
+  name: shipping
+  namespace: default
+spec:
+  workload:
+    kind: Deployment
+    name: shipping
+    namespace: default

@@ -18,6 +18,7 @@ Environment="PRICING_SERVICE_HOST=localhost:8083"
 Environment="COUPON_SERVICE_HOST=localhost:8084"
 Environment="CURRENCY_SERVICE_HOST=localhost:8085"
 Environment="GEOLOCATION_SERVICE_HOST=localhost:8086"
+Environment="SHIPPING_SERVICE_HOST=localhost:8087"
 
 [Install]
 WantedBy=multi-user.target

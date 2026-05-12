@@ -1,0 +1,7 @@
+# Exclude build artifacts from Docker context
+bin
+dist
+.build
+.git
+.gitignore
+.idea
