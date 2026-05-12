@@ -49,7 +49,7 @@ dev-deploy: $(addprefix dev-deploy-,$(APPS))
 # Build and package (delegate to each app's Makefile)
 ##################################################
 
-VERSION ?= v0.1.31
+VERSION ?= v0.1.36
 
 # build-all and build-all-% must appear before build/build-% so BSD make (macOS) matches
 # build-all-coupon to build-all-% (stem coupon) rather than build-% (stem all-coupon).
