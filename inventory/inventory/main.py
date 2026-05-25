@@ -6,7 +6,7 @@ import logging
 dep_location = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'site-packages'))
 sys.path.append(dep_location)
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 import time
 import signal
 
@@ -47,15 +47,19 @@ inventory_items = [
 
 @app.route('/inventory', methods=['GET'])
 def get_inventory():
+    resp = Response(jsonify([item.__dict__ for item in inventory_items]))
+    resp.headers.add("odigos-special-header", "inventory-service")
     logging.info("Returning inventory")
-    return jsonify([item.__dict__ for item in inventory_items])
+    return resp
 
 @app.route('/buy', methods=['POST'])
 def buy_product():
     product_id = request.args.get('id', type=int)
+    resp = Response(jsonify({"message": "Product purchased successfully"}))
+    resp.headers.add("odigos-special-header", "inventory-service")
     logging.info(f"Buying product with id {product_id}")
     time.sleep(1)
-    return jsonify({"message": "Product purchased successfully"})
+    return resp
 
 def signal_handler(sig, frame):
     logging.info('Terminating inventory service')
