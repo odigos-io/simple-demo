@@ -47,7 +47,7 @@ inventory_items = [
 
 @app.route('/inventory', methods=['GET'])
 def get_inventory():
-    resp = Response(jsonify([item.__dict__ for item in inventory_items]))
+    resp = jsonify([item.__dict__ for item in inventory_items])
     resp.headers.add("odigos-special-header", "inventory-service")
     logging.info("Returning inventory")
     return resp
@@ -55,7 +55,7 @@ def get_inventory():
 @app.route('/buy', methods=['POST'])
 def buy_product():
     product_id = request.args.get('id', type=int)
-    resp = Response(jsonify({"message": "Product purchased successfully"}))
+    resp = jsonify({"message": "Product purchased successfully"})
     resp.headers.add("odigos-special-header", "inventory-service")
     logging.info(f"Buying product with id {product_id}")
     time.sleep(1)
