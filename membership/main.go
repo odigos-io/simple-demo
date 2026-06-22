@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel"
@@ -58,6 +58,17 @@ func checkIfMember(ctx context.Context, userId uuid.UUID) bool {
 	return isMember
 }
 
+func buildServiceURL(endpoint, path string) string {
+	base := endpoint
+	if !strings.HasPrefix(base, "http://") && !strings.HasPrefix(base, "https://") {
+		base = "http://" + base
+	}
+	if path != "" && !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+	return base + path
+}
+
 func main() {
 	port := getPortFromEnvOrDefault()
 	slog.Info("Starting Membership service", "port", port)
@@ -83,7 +94,7 @@ func main() {
 			return
 		}
 
-		req, err := http.NewRequestWithContext(request.Context(), "GET", (fmt.Sprintf("http://%s/price?id=0", os.Getenv(pricingEndpointEnvName))), nil)
+		req, err := http.NewRequestWithContext(request.Context(), "GET", buildServiceURL(os.Getenv(pricingEndpointEnvName), "/price?id=0"), nil)
 		if err != nil {
 			slog.Error("failed to create request to pricing service", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)

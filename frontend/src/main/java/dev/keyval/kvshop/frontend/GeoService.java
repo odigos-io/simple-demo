@@ -16,7 +16,7 @@ public class GeoService {
     }
 
     public GeoResult getLocationInfo(String loc) {
-        String url = "http://" + geoServiceHost + "/location/" + loc;
+        String url = ServiceUrl.build(geoServiceHost, "/location/" + loc);
         GeoResult res = new RestTemplate().getForObject(url, GeoResult.class);
 
         log.info("Successfully fetched from Geolocation service, got result: {}", res.toString());

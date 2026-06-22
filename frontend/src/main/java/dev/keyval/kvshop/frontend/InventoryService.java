@@ -19,7 +19,7 @@ public class InventoryService {
     public List<Product> getInventory() {
         // Make http request to product service
         RestTemplate restTemplate = new RestTemplate();
-        Product[] result = restTemplate.getForObject("http://" + inventoryServiceHost + "/inventory", Product[].class);
+        Product[] result = restTemplate.getForObject(ServiceUrl.build(inventoryServiceHost, "/inventory"), Product[].class);
 
         // Convert result to list of products
         return Arrays.asList(result);
@@ -28,6 +28,6 @@ public class InventoryService {
     public void buy(int id) {
         // Make http request to product service
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForObject("http://" + inventoryServiceHost + "/buy?id=" + id, null, Void.class);
+        restTemplate.postForObject(ServiceUrl.build(inventoryServiceHost, "/buy?id=" + id), null, Void.class);
     }
 }

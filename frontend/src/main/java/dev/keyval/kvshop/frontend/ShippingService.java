@@ -16,7 +16,7 @@ public class ShippingService {
     }
 
     public ShippingQuoteResult getQuote(int productId) {
-        String url = "http://" + shippingServiceHost + "/quote?id=" + productId;
+        String url = ServiceUrl.build(shippingServiceHost, "/quote?id=" + productId);
         ShippingQuoteResult res = new RestTemplate().getForObject(url, ShippingQuoteResult.class);
         log.info("Shipping quote for product {}: {} cents ({})", productId,
                 res != null ? res.getShippingCents() : -1,
