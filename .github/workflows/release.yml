@@ -12,6 +12,7 @@ permissions:
 
 env:
   GCP_REGISTRY: us-central1-docker.pkg.dev/odigos-cloud/components
+  GCP_PRIVATE_REGISTRY: us-central1-docker.pkg.dev/odigos-cloud/components-private
 
 jobs:
   release:
@@ -77,7 +78,8 @@ jobs:
         if: matrix.service != 'demo'
         run: |
           docker buildx imagetools create --tag "ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}" \
-            "${{ env.GCP_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
+            "${{ env.GCP_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}" \
+            "${{ env.GCP_PRIVATE_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
 
       - name: Upload Linux packages to Artifact Registry
         if: matrix.service != 'demo'
