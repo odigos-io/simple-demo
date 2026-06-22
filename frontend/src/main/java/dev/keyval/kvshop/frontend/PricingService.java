@@ -18,7 +18,7 @@ public class PricingService {
     public double getPrice(int id) {
         // Make http request to pricing service
         RestTemplate restTemplate = new RestTemplate();
-        PriceResult priceResult = restTemplate.getForObject("http://" + pricingServiceHost + "/price?id=" + id, PriceResult.class);
+        PriceResult priceResult = restTemplate.getForObject(ServiceUrl.build(pricingServiceHost, "/price?id=" + id), PriceResult.class);
         return priceResult.getPrice();
     }
 }

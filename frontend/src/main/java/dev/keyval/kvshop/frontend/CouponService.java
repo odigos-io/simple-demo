@@ -20,7 +20,7 @@ public class CouponService {
     public CouponResult getCoupons() {
         // Make http request to coupon service
         RestTemplate restTemplate = new RestTemplate();
-        CouponResult res = restTemplate.getForObject("http://" + couponServiceHost + "/coupons", CouponResult.class);
+        CouponResult res = restTemplate.getForObject(ServiceUrl.build(couponServiceHost, "/coupons"), CouponResult.class);
         log.info("Fetched coupons from coupon service, got result: {}", res.getCoupon());
         return res;
     }
@@ -28,7 +28,7 @@ public class CouponService {
     public CouponResult applyCoupon() {
         // Make http request to coupon service
         RestTemplate restTemplate = new RestTemplate();
-        CouponResult res = restTemplate.postForObject("http://" + couponServiceHost + "/apply-coupon", null, CouponResult.class);
+        CouponResult res = restTemplate.postForObject(ServiceUrl.build(couponServiceHost, "/apply-coupon"), null, CouponResult.class);
         log.info("Applied coupon to coupon service, got result: {}", res.getCoupon());
         return res;
     }

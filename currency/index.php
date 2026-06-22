@@ -13,6 +13,13 @@ use GuzzleHttp\Exception\RequestException;
 require __DIR__ . '/vendor/autoload.php';
 require('dice.php');
 
+function buildServiceBaseUrl(string $endpoint): string {
+  if (!str_starts_with($endpoint, 'http://') && !str_starts_with($endpoint, 'https://')) {
+    return "http://$endpoint";
+  }
+  return $endpoint;
+}
+
 $logger = new Logger('currency-server');
 $logger->pushHandler(new StreamHandler('php://stdout', Level::Info));
 
@@ -52,7 +59,7 @@ $app->get('/rate/{currencyPair}', function (
   }
 
   $geoServiceHost = getenv('GEOLOCATION_SERVICE_HOST');
-  $client = new Client(['base_uri' => "http://$geoServiceHost"]);
+  $client = new Client(['base_uri' => buildServiceBaseUrl($geoServiceHost)]);
 
   try {
     $res1 = $client->request('GET', "/location/$currency1", ['headers' => ['Accept' => 'application/json']]);

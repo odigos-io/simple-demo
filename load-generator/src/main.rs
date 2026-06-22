@@ -3,6 +3,22 @@ use std::process;
 use tokio::time::{sleep, Duration};
 use rand::Rng;
 
+fn build_service_url(endpoint: &str, path: &str) -> String {
+    let base = if endpoint.starts_with("http://") || endpoint.starts_with("https://") {
+        endpoint.to_string()
+    } else {
+        format!("http://{}", endpoint)
+    };
+    if path.is_empty() {
+        return base;
+    }
+    if path.starts_with('/') {
+        format!("{}{}", base, path)
+    } else {
+        format!("{}/{}", base, path)
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
@@ -29,7 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         // Make POST request to the specified endpoint
         let response = client
-            .post(format!("http://{}/buy?id={}", frontend_service_host, random_id))
+            .post(build_service_url(&frontend_service_host, &format!("/buy?id={}", random_id)))
             .send()
             .await?;
 

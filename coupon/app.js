@@ -18,6 +18,17 @@ assert.equal(
   )}`
 );
 
+function buildServiceUrl(endpoint, path) {
+  const base =
+    endpoint.startsWith("http://") || endpoint.startsWith("https://")
+      ? endpoint
+      : `http://${endpoint}`;
+  if (!path) {
+    return base;
+  }
+  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
@@ -43,7 +54,7 @@ app.get("/coupons", (req, res) => {
 
   // Fetch from membership api
   axios
-    .get(`http://${MEMBERSHIP_SERVICE_HOST}/isMember`)
+    .get(buildServiceUrl(MEMBERSHIP_SERVICE_HOST, "/isMember"))
     .then(function (response) {
       console.log("Got response from membership service!", response.data);
       res.json({
@@ -73,7 +84,7 @@ app.post("/apply-coupon", (req, res) => {
 
   // Fetch from membership api
   axios
-    .get(`http://${MEMBERSHIP_SERVICE_HOST}/isMember`)
+    .get(buildServiceUrl(MEMBERSHIP_SERVICE_HOST, "/isMember"))
     .then(function (response) {
       console.log("Got response from membership service!", response.data);
       res.json({
