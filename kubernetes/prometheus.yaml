@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: promethues
+  name: prometheus
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
-  namespace: promethues
+  namespace: prometheus
 data:
   prometheus.yml: |
     global:
@@ -29,7 +29,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
-  namespace: promethues
+  namespace: prometheus
   labels:
     app.kubernetes.io/name: prometheus
 spec:
@@ -48,7 +48,7 @@ spec:
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
           - "--web.enable-otlp-receiver"
-          - "--web.external-url=http://prometheus.promethues:9090"
+          - "--web.external-url=http://prometheus.prometheus:9090"
           - "--web.route-prefix=/"
           - "--enable-feature=remote-write-receiver"
           - "--storage.tsdb.path=/tmp/prom-tsdb"
@@ -87,7 +87,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: prometheus
-  namespace: promethues
+  namespace: prometheus
   labels:
     app.kubernetes.io/name: prometheus
 spec:

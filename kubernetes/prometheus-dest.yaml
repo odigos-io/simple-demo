@@ -1,12 +1,12 @@
 apiVersion: odigos.io/v1alpha1
 kind: Destination
 metadata:
-  name: promethues-rw
+  name: prometheus-rw
   namespace: odigos-system
 spec:
   data:
-    PROMETHEUS_REMOTEWRITE_URL: http://prometheus.promethues:9090/api/v1/write
-  destinationName: "promethues remote write"
+    PROMETHEUS_REMOTEWRITE_URL: http://prometheus.prometheus:9090/api/v1/write
+  destinationName: "prometheus remote write"
   signals:
   - METRICS
   sourceSelector:
