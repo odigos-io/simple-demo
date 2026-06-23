@@ -64,7 +64,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build packages (both archs) and multi-arch image; image is pushed to GCP_REGISTRY when PUSH=1
+      # Build packages (both archs) and multi-arch image; image is pushed to GCP_REGISTRY when PUSH=1,
+      # then the same manifest is copied to GCP_PRIVATE_REGISTRY so both registries hold an identical image.
       - name: Build and package ${{ matrix.service }}
         working-directory: ${{ matrix.service }}
         run: |
@@ -72,14 +73,17 @@ jobs:
             TAG="${{ env.TAG }}" \
             REGISTRY="${{ env.GCP_REGISTRY }}" \
             PUSH=1
+          docker buildx imagetools create \
+            --tag "${{ env.GCP_PRIVATE_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}" \
+            "${{ env.GCP_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
 
-      # Copy the multi-arch manifest list from GCP to GHCR (demo has no image)
+      # Copy the multi-arch manifest list from GCP to GHCR (demo has no image).
+      # Both GCP registries are identical, so a single source is used here.
       - name: Tag and push multi-arch image to GitHub Container Registry
         if: matrix.service != 'demo'
         run: |
           docker buildx imagetools create --tag "ghcr.io/${{ github.repository }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}" \
-            "${{ env.GCP_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}" \
-            "${{ env.GCP_PRIVATE_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
+            "${{ env.GCP_REGISTRY }}/odigos-demo-${{ matrix.service }}:${{ env.TAG }}"
 
       - name: Upload Linux packages to Artifact Registry
         if: matrix.service != 'demo'
