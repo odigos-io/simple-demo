@@ -15,6 +15,9 @@ contents:
   dst: /lib/systemd/system/odigos-demo-membership.service
 - src: ./dist/app
   dst: /usr/bin
+- src: tiers.json
+  dst: /etc/odigos-demo/membership-tiers.json
+  type: config
 scripts:
   preinstall: ./distribution/preinstall.sh
   postinstall: ./distribution/postinstall.sh

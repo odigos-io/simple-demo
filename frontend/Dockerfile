@@ -23,8 +23,9 @@ RUN mvn --no-transfer-progress clean package -DskipTests
 COPY distribution nfpm.yaml ./
 
 # --- Runtime image ---
-FROM eclipse-temurin:17-jre-jammy AS app
+FROM eclipse-temurin:17.0.19_10-jre-jammy AS app
 COPY --from=builder /home/app/target/*.jar /app/frontend.jar
+COPY return-policy.txt /etc/odigos-demo/return-policy.txt
 CMD ["java", "-jar", "/app/frontend.jar"]
 
 # --- Package stage: arch from docker --platform (TARGETARCH); one image per arch ---
@@ -35,7 +36,7 @@ RUN apt-get update \
 COPY --from=nfpm-build /go/bin/nfpm /usr/local/bin/nfpm
 WORKDIR /workspace
 COPY --from=builder /home/app/distribution ./distribution
-COPY --from=builder /home/app/nfpm.yaml ./
+COPY --from=builder /home/app/nfpm.yaml /home/app/return-policy.txt ./
 RUN mkdir -p dist/app
 COPY --from=builder /home/app/target/*.jar dist/app/
 RUN mv dist/app/*.jar dist/app/frontend.jar

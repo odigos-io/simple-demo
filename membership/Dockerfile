@@ -3,7 +3,7 @@ FROM golang:1.22-alpine AS nfpm-build
 RUN go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.34.0
 
 # --- Build ---
-FROM golang:1.21.4 AS builder
+FROM golang:1.23.12 AS builder
 WORKDIR /workspace
 COPY . .
 RUN CGO_ENABLED=0 go build -o /workspace/membership main.go
@@ -11,6 +11,7 @@ RUN CGO_ENABLED=0 go build -o /workspace/membership main.go
 # --- Runtime image ---
 FROM gcr.io/distroless/base-debian10 AS app
 COPY --from=builder /workspace/membership /membership
+COPY tiers.json /etc/odigos-demo/membership-tiers.json
 USER 15000
 ENTRYPOINT ["/membership"]
 
@@ -19,7 +20,7 @@ FROM alpine:3.18 AS package
 COPY --from=nfpm-build /go/bin/nfpm /usr/local/bin/nfpm
 WORKDIR /workspace
 COPY distribution ./distribution
-COPY nfpm.yaml ./
+COPY nfpm.yaml tiers.json ./
 RUN mkdir -p dist/app /packages
 COPY --from=builder /workspace/membership dist/app/odigos-demo-membership
 ARG TARGETARCH

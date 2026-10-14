@@ -15,6 +15,9 @@ contents:
   dst: /lib/systemd/system/odigos-demo-frontend.service
 - src: ./dist/app
   dst: /opt/odigos-demo-frontend
+- src: return-policy.txt
+  dst: /etc/odigos-demo/return-policy.txt
+  type: config
 scripts:
   preinstall: ./distribution/preinstall.sh
   postinstall: ./distribution/postinstall.sh

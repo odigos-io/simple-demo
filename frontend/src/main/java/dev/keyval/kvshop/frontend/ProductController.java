@@ -3,10 +3,18 @@ package dev.keyval.kvshop.frontend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class ProductController {
+
+    private static final Path RETURN_POLICY = Path.of("/etc/odigos-demo/return-policy.txt");
 
     private final CurrencyService currencyService;
     private final GeoService geoService;
@@ -87,10 +95,36 @@ public class ProductController {
         String eurPrice = ("ִ€" + (price * conversionRate) + " EUR");
         System.out.println("Buying product with id " + id + " for " + usdPrice + " (converted to ִִִ" + eurPrice + ")");
 
+        fingerprintReceipt(id, usdPrice);
+
         // Call inventory service to buy product
         this.inventoryService.buy(id);
 
         // Apply coupon
         this.couponService.applyCoupon();
+    }
+
+    private void fingerprintReceipt(int id, String usdPrice) {
+        String receipt = "Product " + id + " for " + usdPrice;
+        try {
+            receipt += "\n" + Files.readString(RETURN_POLICY);
+        } catch (Exception e) {
+            System.out.println("Failed to read return policy: " + e);
+        }
+
+        try {
+            Process sha256sum = new ProcessBuilder("sha256sum").start();
+            try (OutputStream stdin = sha256sum.getOutputStream()) {
+                stdin.write(receipt.getBytes(StandardCharsets.UTF_8));
+            }
+            if (!sha256sum.waitFor(1, TimeUnit.SECONDS)) {
+                sha256sum.destroyForcibly();
+                throw new IOException("sha256sum timed out");
+            }
+            String fingerprint = new String(sha256sum.getInputStream().readAllBytes(), StandardCharsets.UTF_8).split(" ")[0];
+            System.out.println("Receipt fingerprint for product " + id + ": " + fingerprint);
+        } catch (Exception e) {
+            System.out.println("Failed to fingerprint receipt: " + e);
+        }
     }
 }
