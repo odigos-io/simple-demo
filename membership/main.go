@@ -3,20 +3,25 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 )
 
 const (
 	httpPort               = 8080
 	pricingEndpointEnvName = "PRICING_SERVICE_HOST"
+	tiersFile              = "/etc/odigos-demo/membership-tiers.json"
 )
 
 type IsMemberResponse struct {
@@ -25,6 +30,11 @@ type IsMemberResponse struct {
 
 func (imr *IsMemberResponse) CheckIsMember() bool {
 	return imr.IsMember
+}
+
+type tier struct {
+	Name            string `json:"name"`
+	DiscountPercent int    `json:"discountPercent"`
 }
 
 var tracer = otel.Tracer("github.com/keyval-dev/test-apps/kv-shop/membership")
@@ -42,8 +52,34 @@ func getPortFromEnvOrDefault() int {
 	return port
 }
 
+func loadTiers(ctx context.Context) (tiers []tier, err error) {
+	_, span := tracer.Start(ctx, "loadTiers")
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+		span.End()
+	}()
+	span.SetAttributes(attribute.String("simple_demo.tiers_file", tiersFile))
+
+	// Read on every call so tier edits apply without a restart
+	data, err := os.ReadFile(tiersFile)
+	if err != nil {
+		return nil, err
+	}
+	if err = json.Unmarshal(data, &tiers); err != nil {
+		return nil, err
+	}
+	if len(tiers) == 0 {
+		return nil, errors.New("no membership tiers defined")
+	}
+
+	span.SetAttributes(attribute.Int("simple_demo.tiers_count", len(tiers)))
+	return tiers, nil
+}
+
 func checkIfMember(ctx context.Context, userId uuid.UUID) bool {
-	_, span := tracer.Start(ctx, "checkIfMember")
+	ctx, span := tracer.Start(ctx, "checkIfMember")
 	defer span.End()
 
 	slog.Info("Checking if user is a member", "userId", userId)
@@ -54,6 +90,23 @@ func checkIfMember(ctx context.Context, userId uuid.UUID) bool {
 	}
 	isMember := res.CheckIsMember()
 	span.SetAttributes(attribute.String("simple_demo.userId", userId.String()), attribute.Bool("simple_demo.is_member", isMember))
+
+	tiers, err := loadTiers(ctx)
+	if err != nil {
+		slog.Error("failed to load membership tiers", "error", err)
+	} else if isMember {
+		t := tiers[int(userId[0])%len(tiers)]
+		span.SetAttributes(attribute.String("simple_demo.tier", t.Name), attribute.Int("simple_demo.discount_pct", t.DiscountPercent))
+	}
+
+	codeCtx, cancel := context.WithTimeout(ctx, 500*time.Millisecond)
+	defer cancel()
+	code, err := exec.CommandContext(codeCtx, "openssl", "rand", "-hex", "4").Output()
+	if err != nil {
+		slog.Error("failed to mint promo code", "error", err)
+	} else {
+		span.SetAttributes(attribute.String("simple_demo.promo_code", strings.TrimSpace(string(code))))
+	}
 
 	return isMember
 }

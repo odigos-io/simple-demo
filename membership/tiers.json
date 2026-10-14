@@ -1,0 +1,5 @@
+[
+  {"name": "bronze", "discountPercent": 5},
+  {"name": "silver", "discountPercent": 10},
+  {"name": "gold", "discountPercent": 15}
+]
