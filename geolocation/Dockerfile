@@ -2,7 +2,7 @@
 # check=error=true
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.4.4
+ARG RUBY_VERSION=4.0.9
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 WORKDIR /rails
@@ -34,7 +34,9 @@ RUN chmod +x /rails/binaries/*
 # --- Bundle for native packages: Ruby 3.3, built on Bullseye (glibc 2.31) so .so run on RHEL 9 (2.34) and Ubuntu (2.35+) ---
 FROM docker.io/library/ruby:3.3-slim-bullseye AS bundle-for-package
 WORKDIR /rails
-RUN apt-get update -qq && \
+# Bullseye is end-of-life and its packages moved from deb.debian.org to archive.debian.org
+RUN sed -i 's|http://deb.debian.org|http://archive.debian.org|g' /etc/apt/sources.list && \
+    apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential libyaml-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 ENV BUNDLE_WITHOUT=development:test \
